@@ -1,9 +1,4 @@
-import { Suspense } from "react";
 import SiteLayout from "@/components/layout/SiteLayout";
-import SearchBar from "@/components/search/SearchBar";
-import MediaGrid from "@/components/media/MediaGrid";
-import { MediaType } from "@/lib/types";
-import { searchMedia } from "@/lib/routes";
 import { Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -21,7 +16,7 @@ export default async function HomePage() {
 const HomeItem = ({ route, text }: { route: string; text: string }) => {
   return (
     <Button variant="outline" asChild>
-      <Link href="/search" className="w-[7rem] h-[7rem]">
+      <Link href={route} className="w-[7rem] h-[7rem]">
         <Film className="w-[5rem] h-[5rem]" />
         <span>{text}</span>
       </Link>

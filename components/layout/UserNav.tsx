@@ -3,18 +3,17 @@
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import {
-  LuLogOut,
-  LuUser,
-  LuBookmark,
-  LuCheck,
-  LuSearch,
-} from "react-icons/lu";
+  LogOut,
+  User,
+  Bookmark,
+  Check,
+  Search,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -43,27 +42,27 @@ export function UserNav() {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-1 contrast rounded px-2 cursor-pointer">
         <span>{user?.name || "User"}</span>
-        <LuUser size={16} />
+        <User size={16} />
       </DropdownMenuTrigger>
       <DropdownMenuContent side="bottom" className="anti-contrast mr-3.5">
         <DropdownMenuItem className="p-0.5 rounded">
           <Link href="/user/watchlist" className="flex items-center gap-2">
-            <LuBookmark size={16} />
+            <Bookmark size={16} />
             <span>watchlist</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="p-0.5 rounded">
           <Link href="/user/watched" className="flex items-center gap-2">
-            <LuCheck size={16} />
+            <Check size={16} />
             <span>watched</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="p-0.5 rounded">
           <Link href="/search" className="flex items-center gap-2">
-            <LuSearch size={16} />
-            <span>seach</span>
+            <Search size={16} />
+            <span>search</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
@@ -71,7 +70,7 @@ export function UserNav() {
           onClick={() => logout()}
           className="flex items-center gap-2 p-0.5 rounded"
         >
-          <LuLogOut size={16} />
+          <LogOut size={16} />
           <span>logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

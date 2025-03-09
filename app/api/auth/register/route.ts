@@ -1,7 +1,8 @@
+// api/register.ts
 import { NextResponse } from "next/server";
 import User from "@/models/User";
-import mongoose from "mongoose";
 import connectToDatabase from "@/lib/database";
+import bcrypt from "bcryptjs";
 
 export async function POST(request: Request) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Connect to MongoDB using your client
+    // Connect to MongoDB
     await connectToDatabase();
 
     // Check if user already exists
@@ -29,11 +30,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // Create user using Mongoose model (which handles password hashing)
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user with hashed password
     const user = new User({
       username,
       email,
-      password,
+      password: hashedPassword,
       createdAt: new Date(),
     });
 

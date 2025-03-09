@@ -27,6 +27,7 @@ export default function MediaGrid({
           key={item.id}
           media={item}
           mediaType={mediaType}
+          type="short"
         />
       ))}
     </div>

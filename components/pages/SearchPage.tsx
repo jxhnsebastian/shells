@@ -5,7 +5,7 @@ import MediaGrid from "@/components/media/MediaGrid";
 import SearchBar from "@/components/search/SearchBar";
 import { Pagination } from "@/components/ui/pagination";
 import { useSearchContext } from "@/components/context/SearchContext";
-import { LuLoader } from "react-icons/lu";
+import { Loader } from "lucide-react";
 
 export default function SearchPage() {
   const {
@@ -14,7 +14,6 @@ export default function SearchPage() {
     page,
     setPage,
     totalPages,
-    totalMovies,
     performSearch,
     isPageLoading,
   } = useSearchContext();
@@ -38,14 +37,14 @@ export default function SearchPage() {
           fallback={
             <div>
               loading movies{" "}
-              <LuLoader className="h-5 w-5 animate-spin text-gray-500" />
+              <Loader className="h-5 w-5 animate-spin text-gray-500" />
             </div>
           }
         >
           {isPageLoading && (
             <div>
               loading page {page}{" "}
-              <LuLoader className="h-5 w-5 animate-spin text-gray-500" />
+              <Loader className="h-5 w-5 animate-spin text-gray-500" />
             </div>
           )}
           <MediaGrid items={movies} mediaType={"movie"} />

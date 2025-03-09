@@ -1,12 +1,8 @@
+"use client";
+
 import { checkMediaStatus, searchMedia } from "@/lib/routes";
 import { MediaType, TMDBMovie } from "@/lib/types";
-import React, {
-  createContext,
-  useContext,
-  useState,
-  ReactNode,
-  useEffect,
-} from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface SearchContextProps {
   results: TMDBMovie[];
@@ -39,6 +35,7 @@ interface SearchContextProps {
   setWatchList: React.Dispatch<React.SetStateAction<number[]>>;
 
   performSearch: (searchQuery: string, isPage?: boolean) => Promise<void>;
+  checkList: (ids: number[]) => Promise<void>;
 }
 
 const SearchContext = createContext<SearchContextProps | undefined>(undefined);
@@ -80,7 +77,6 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 
     setIsLoading(true);
     isPage && setPageIsLoading(true);
-    console.log(year, language);
 
     try {
       const parsedYear = parseInt(year);
@@ -146,6 +142,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         watchList,
         setWatchList,
         performSearch,
+        checkList,
       }}
     >
       {children}

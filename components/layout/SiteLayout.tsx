@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { UserNav } from "./UserNav";
-import SearchBar from "../search/SearchBar";
 
 interface SiteLayoutProps {
   children: React.ReactNode;

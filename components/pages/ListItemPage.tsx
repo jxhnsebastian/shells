@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { getList } from "@/lib/routes";
-import { LuLoader } from "react-icons/lu";
+import { Loader } from "lucide-react";
 import SearchResults from "../search/SearchResults";
 import { Pagination } from "@/components/ui/pagination";
 import { TMDBMovie } from "@/lib/types";
+import { useSearchContext } from "../context/SearchContext";
 
 export default function ListItemPage({ listType }: { listType: string }) {
+  const { checkList } = useSearchContext();
   const [items, setItems] = useState<TMDBMovie[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -20,6 +22,7 @@ export default function ListItemPage({ listType }: { listType: string }) {
         const { items, pagination } = await getList(listType, page, 20);
         setItems(items);
         setTotalPages(pagination?.totalPages ?? 1);
+        await checkList(items.map((movie) => movie.id));
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -34,7 +37,7 @@ export default function ListItemPage({ listType }: { listType: string }) {
     <div className="space-y-8">
       {isLoading ? (
         <div className="flex items-center gap-2 text-gray-500">
-          Loading your {listType} <LuLoader className="h-5 w-5 animate-spin" />
+          Loading your {listType} <Loader className="h-5 w-5 animate-spin" />
         </div>
       ) : (
         <>
@@ -42,11 +45,7 @@ export default function ListItemPage({ listType }: { listType: string }) {
             your {listType}
           </h4>
 
-          <SearchResults
-            results={items}
-            isLoading={isLoading}
-            mediaType="movie"
-          />
+          <SearchResults results={items} isLoading={isLoading} />
 
           <Pagination
             page={page}

@@ -1,27 +1,11 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcrypt";
-import mongoose from "mongoose";
+import { compare } from "bcryptjs";
 import connectToDatabase from "@/lib/database";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import { MongoClient } from "mongodb";
 import type { NextAuthOptions } from "next-auth";
 import User from "@/models/User";
 
-let clientPromise: Promise<MongoClient> | null = null;
-
-async function getMongoClient() {
-  if (!clientPromise) {
-    await connectToDatabase();
-    clientPromise = mongoose.connection
-      .asPromise()
-      .then((conn) => conn.getClient());
-  }
-  return clientPromise;
-}
-
 export const authOptions: NextAuthOptions = {
-  adapter: MongoDBAdapter(await getMongoClient()), // Use the adapter correctly
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -33,24 +17,24 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Missing credentials");
         }
-
+        
         await connectToDatabase();
-
+        
         const user = await User.findOne({ email: credentials.email });
-
+        
         if (!user) {
           throw new Error("User not found");
         }
-
+        
         const passwordMatch = await compare(
           credentials.password,
           user.password
         );
-
+        
         if (!passwordMatch) {
           throw new Error("Invalid password");
         }
-
+        
         return {
           id: user._id.toString(),
           email: user.email,
@@ -86,4 +70,4 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 };
 
-export const handlers = NextAuth(authOptions)
+export const handlers = NextAuth(authOptions);

@@ -1,4 +1,4 @@
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
   page: number;
@@ -69,7 +69,7 @@ export const Pagination: React.FC<PaginationProps> = ({
 
     const middlePage = Math.floor(visiblePages / 2);
     const startPage = currentPage - middlePage;
-    const endPage = currentPage + middlePage;
+    // const endPage = currentPage + middlePage;
     return [...Array(visiblePages)].map((_, i) => {
       const pageNumber = startPage + i;
       return (
@@ -96,7 +96,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           page > 1 ? "" : "opacity-50 pointer-events-none"
         }`}
       >
-        <FaChevronLeft className="w-3 h-3" />
+        <ChevronLeft className="w-3 h-3" />
       </button>
       {items && items.length > 0 && (
         <>
@@ -160,7 +160,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           page < maxPages ? "" : "opacity-50 pointer-events-none"
         }`}
       >
-        <FaChevronRight className="w-3 h-3" />
+        <ChevronRight className="w-3 h-3" />
       </button>
     </div>
   );

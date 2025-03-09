@@ -1,22 +1,19 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useRef, useEffect } from "react";
 import {
-  LuFilm,
-  LuTv,
-  LuX,
-  LuSearch,
-  LuCalendar,
-  LuFilter,
-  LuGlobe,
-  LuCheck,
-} from "react-icons/lu";
-import { PiFilmReel } from "react-icons/pi";
+  Tv,
+  X,
+  Search,
+  Calendar,
+  Filter,
+  Globe,
+  Check,
+  LucideFilm,
+} from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
-import { MediaType, TMDBMovie, TMDBResponse } from "@/lib/types";
+import { MediaType } from "@/lib/types";
 import SearchResults from "./SearchResults";
-import { searchMedia } from "@/lib/routes";
 import {
   Select,
   SelectContent,
@@ -40,12 +37,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { languages, sortOptions } from "@/lib/constants";
 import { useSearchContext } from "../context/SearchContext";
 
 export default function SearchBar() {
-  const router = useRouter();
   const {
     query,
     setQuery,
@@ -60,13 +55,9 @@ export default function SearchBar() {
     movies,
     setMovies,
     results,
-    setResults,
     isLoading,
-    setIsLoading,
     page,
-    setPage,
     totalPages,
-    setTotalPages,
     totalMovies,
     performSearch,
   } = useSearchContext();
@@ -133,9 +124,9 @@ export default function SearchBar() {
           >
             <SelectTrigger className="w-auto h-8 text-xs gap-1 border-0 focus-visible:ring-0 focus-visible:ring-offset-0">
               {mediaType === "movie" ? (
-                <PiFilmReel className="w-5 h-5" />
+                <LucideFilm className="w-5 h-5" />
               ) : (
-                <LuTv className="w-4 h-4" />
+                <Tv className="w-4 h-4" />
               )}
             </SelectTrigger>
             <SelectContent>
@@ -164,7 +155,7 @@ export default function SearchBar() {
                 size="icon"
                 className="h-8 w-8 absolute right-12"
               >
-                <LuX className="h-4 w-4" />
+                <X className="h-4 w-4" />
               </Button>
             )}
 
@@ -174,7 +165,7 @@ export default function SearchBar() {
               variant="ghost"
               className="mx-2 cursor-pointer"
             >
-              <LuSearch className="h-4 w-4" />
+              <Search className="h-4 w-4" />
             </Button>
           </div>
         </div>
@@ -183,7 +174,7 @@ export default function SearchBar() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 gap-1">
-                <LuCalendar className="h-3.5 w-3.5" />
+                <Calendar className="h-3.5 w-3.5" />
                 <span>{year || "year"}</span>
               </Button>
             </PopoverTrigger>
@@ -201,7 +192,7 @@ export default function SearchBar() {
 
           <Select value={sort} onValueChange={setSort}>
             <SelectTrigger className="w-auto h-8 gap-1">
-              <LuFilter className="h-3.5 w-3.5" />
+              <Filter className="h-3.5 w-3.5" />
               <SelectValue>
                 {(sortOptions[sort] || sort).toLowerCase()}
               </SelectValue>
@@ -218,7 +209,7 @@ export default function SearchBar() {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 gap-1">
-                <LuGlobe className="h-3.5 w-3.5" />
+                <Globe className="h-3.5 w-3.5" />
                 <span className="max-w-[100px] truncate">
                   {language
                     ? (
@@ -240,7 +231,7 @@ export default function SearchBar() {
                       onSelect={() => setLanguage("")}
                       className="flex items-center gap-2"
                     >
-                      {!language && <LuCheck className="h-4 w-4" />}
+                      {!language && <Check className="h-4 w-4" />}
                       <span className="ml-2">all languages</span>
                     </CommandItem>
                     {languages
@@ -255,7 +246,7 @@ export default function SearchBar() {
                           className="flex items-center gap-2"
                         >
                           {language === lang.iso_639_1 && (
-                            <LuCheck className="h-4 w-4" />
+                            <Check className="h-4 w-4" />
                           )}
                           <span className="ml-2">
                             {lang.english_name.toLowerCase()}
@@ -288,12 +279,7 @@ export default function SearchBar() {
       {/* Search results dropdown */}
       {isFocused && query.length > 0 && (
         <div className="absolute left-0 right-0 z-10 mt-1 bg-background border rounded-lg shadow-md overflow-hidden">
-          <SearchResults
-            results={results.slice(0, 3)}
-            isLoading={isLoading}
-            mediaType={mediaType}
-            onSelect={() => setIsFocused(false)}
-          />
+          <SearchResults results={results.slice(0, 3)} isLoading={isLoading} />
           {results.length > 0 && (
             <div className="p-2 text-center border-t">
               <Button

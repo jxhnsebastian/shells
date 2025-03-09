@@ -15,6 +15,25 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Shells",
+  description: "Your local Shells",
+  applicationName: "Shells",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Shells",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  themeColor: "#000000",
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icons/icon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/icons/icon-192x192.png",
+  },
 };
 
 export default function RootLayout({

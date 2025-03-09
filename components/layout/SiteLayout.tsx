@@ -11,7 +11,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       <header className="border-b-2 border-accent-light">
         <div className=" px-4 py-3 flex items-center justify-between bg-background">
           <Link href="/" className="text-2xl font-bold text-accent-light">
-            Shells
+            shells
           </Link>
           <UserNav />
         </div>
@@ -22,8 +22,8 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       <footer className="">
         <div className="container mx-auto px-4 text-center text-charcoal">
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} Shells. Movie data provided by
-            TMDB.
+            &copy; {new Date().getFullYear()} shells. movie data provided by
+            tmdb.
           </p>
         </div>
       </footer>

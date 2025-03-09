@@ -7,7 +7,7 @@ export default async function HomePage() {
   return (
     <SiteLayout>
       <div className="space-y-8 flex items-center">
-        <HomeItem route="/search" text="Movies" />
+        <HomeItem route="/search" text="movies" />
       </div>
     </SiteLayout>
   );

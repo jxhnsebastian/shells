@@ -5,7 +5,6 @@ import { getList } from "@/lib/routes";
 import { Loader } from "lucide-react";
 import SearchResults from "../search/SearchResults";
 import { Pagination } from "@/components/ui/pagination";
-import { TMDBMovie } from "@/lib/types";
 import { useSearchContext } from "../context/SearchContext";
 
 export default function ListItemPage({ listType }: { listType: string }) {

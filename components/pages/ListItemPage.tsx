@@ -9,8 +9,7 @@ import { TMDBMovie } from "@/lib/types";
 import { useSearchContext } from "../context/SearchContext";
 
 export default function ListItemPage({ listType }: { listType: string }) {
-  const { checkList } = useSearchContext();
-  const [items, setItems] = useState<TMDBMovie[]>([]);
+  const { checkList, items, setItems } = useSearchContext();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);

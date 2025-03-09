@@ -1,14 +1,23 @@
 "use client";
 
+import { useAuth } from "@/hooks/useAuth";
 import { checkMediaStatus, searchMedia } from "@/lib/routes";
 import { MediaType, TMDBMovie } from "@/lib/types";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
 
 interface SearchContextProps {
   results: TMDBMovie[];
   setResults: (value: TMDBMovie[]) => void;
   movies: TMDBMovie[];
   setMovies: (value: TMDBMovie[]) => void;
+  items: TMDBMovie[];
+  setItems: (value: TMDBMovie[]) => void;
   query: string;
   setQuery: (value: string) => void;
   mediaType: MediaType;
@@ -45,6 +54,16 @@ interface SearchProviderProps {
 }
 
 export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
+  const { user, isAuthenticated, logout } = useAuth();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setItems([]);
+      setWatchList([]);
+      setWatched([]);
+    }
+  }, [isAuthenticated]);
+
   const [query, setQuery] = useState<string>("");
   const [mediaType, setMediaType] = useState<MediaType>("movie");
   const [year, setYear] = useState<string>("");
@@ -52,6 +71,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [language, setLanguage] = useState<string>("en");
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
+  const [items, setItems] = useState<TMDBMovie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
@@ -125,6 +145,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         setLanguage,
         movies,
         setMovies,
+        items,
+        setItems,
         results,
         setResults,
         isLoading,

@@ -10,17 +10,17 @@ export const authOptions: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
+        username: { label: "username", type: "email" },
+        password: { label: "password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.username || !credentials?.password) {
           throw new Error("Missing credentials");
         }
         
         await connectToDatabase();
         
-        const user = await User.findOne({ email: credentials.email });
+        const user = await User.findOne({ username: credentials.username });
         
         if (!user) {
           throw new Error("User not found");

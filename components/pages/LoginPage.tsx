@@ -18,7 +18,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
   const [error, setError] = useState("");
@@ -31,7 +31,7 @@ export default function LoginPage() {
   const authError = searchParams.get("error");
   if (authError && !error) {
     if (authError === "CredentialsSignin") {
-      setError("Invalid email or password");
+      setError("Invalid username or password");
     } else {
       setError("An error occurred during sign in");
     }
@@ -53,12 +53,12 @@ export default function LoginPage() {
     try {
       const result = await signIn("credentials", {
         redirect: false,
-        email: formData.email,
+        username: formData.username,
         password: formData.password,
       });
 
       if (result?.error) {
-        setError("Invalid email or password");
+        setError("invalid username or password");
         setLoading(false);
         return;
       }
@@ -77,10 +77,10 @@ export default function LoginPage() {
       <Card className="w-full max-w-md border-neutral-800">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            Login to Shells
+            login to shells
           </CardTitle>
           <CardDescription className="text-center text-neutral-400">
-            Enter your credentials to access your account
+            enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -92,12 +92,12 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="username">username</Label>
               <Input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                type="string"
+                id="username"
+                name="username"
+                value={formData.username}
                 onChange={handleChange}
                 className="bg-neutral-950 border-neutral-800"
                 required
@@ -105,7 +105,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">password</Label>
               <Input
                 type="password"
                 id="password"

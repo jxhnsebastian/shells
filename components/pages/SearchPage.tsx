@@ -16,6 +16,7 @@ export default function SearchPage() {
     totalPages,
     performSearch,
     isPageLoading,
+    mediaType,
   } = useSearchContext();
 
   useEffect(() => {
@@ -35,19 +36,19 @@ export default function SearchPage() {
       <div>
         <Suspense
           fallback={
-            <div>
-              loading movies{" "}
+            <div className="flex items-center gap-1">
+              loading movies
               <Loader className="h-5 w-5 animate-spin text-gray-500" />
             </div>
           }
         >
           {isPageLoading && (
-            <div>
-              loading page {page}{" "}
+            <div className="flex items-center gap-1">
+              loading page {page}
               <Loader className="h-5 w-5 animate-spin text-gray-500" />
             </div>
           )}
-          <MediaGrid items={movies} mediaType={"movie"} />
+          <MediaGrid items={movies} mediaType={mediaType} />
           <Pagination
             page={page}
             setPage={setPage}

@@ -7,9 +7,9 @@ interface SiteLayoutProps {
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b-2 border-accent-light">
-        <div className=" px-4 py-3 flex items-center justify-between bg-background">
+    <div className="h-[100dvh] font-mono w-full overflow-x-hidden overflow-auto flex flex-col">
+      <header className="z-10">
+        <div className=" px-4 py-3 flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-accent-light">
             shells
           </Link>
@@ -19,7 +19,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
 
       <main className="flex-1 container mx-auto px-4 py-6">{children}</main>
 
-      <footer className="">
+      <footer className="z-10">
         <div className="container mx-auto px-4 text-center text-charcoal">
           <p className="text-sm">
             &copy; {new Date().getFullYear()} shells. movie data provided by

@@ -17,7 +17,7 @@ export default function ListItemPage({ listType }: { listType: string }) {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const { items, pagination } = await getList(listType, page, 20);
+        const { items, pagination } = await getList(listType, page, 15);
         setItems(items);
         setTotalPages(pagination?.totalPages ?? 1);
         await checkList(items.map((movie) => movie.id));
@@ -43,7 +43,7 @@ export default function ListItemPage({ listType }: { listType: string }) {
             your {listType}
           </h4>
 
-          <SearchResults results={items} isLoading={isLoading} />
+          <SearchResults results={items} isLoading={isLoading} layout="grid" />
 
           <Pagination
             page={page}

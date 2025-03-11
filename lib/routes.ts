@@ -1,4 +1,4 @@
-import { SearchParams, TMDBResponse } from "./types";
+import { MovieDetail, SearchParams, TMDBResponse } from "./types";
 
 const API_BASE = "/api/media/watchlist";
 
@@ -130,7 +130,7 @@ export async function getList(
 
 export async function searchMedia(params: SearchParams): Promise<TMDBResponse> {
   try {
-    const response = await fetch("/api/media/search", {
+    const response = await fetch("/api/media/discover", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -146,6 +146,30 @@ export async function searchMedia(params: SearchParams): Promise<TMDBResponse> {
   } catch (error) {
     console.error("Error fetching from API:", error);
     return { page: 1, results: [], total_pages: 0, total_results: 0 };
+  }
+}
+
+export async function getMediaDetails(params: {
+  id: number;
+  media_type?: string;
+}): Promise<MovieDetail> {
+  try {
+    const response = await fetch("/api/media/details", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching from API:", error);
+    return {} as MovieDetail;
   }
 }
 

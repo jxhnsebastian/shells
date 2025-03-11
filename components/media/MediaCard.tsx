@@ -1,121 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, Check, Star, BookMarked, Calendar } from "lucide-react";
-import { MediaType, TMDBMovie } from "@/lib/types";
+import { TMDBMovie } from "@/lib/types";
 import { getGenreName, getImageUrl } from "@/lib/helpers";
 import { Badge } from "../ui/badge";
-import {
-  addToWatched,
-  addToWatchlist,
-  removeFromWatched,
-  removeFromWatchlist,
-} from "@/lib/routes";
 import { useSearchContext } from "../context/SearchContext";
 import { Card } from "@/components/ui/card";
 
 interface MediaCardProps {
   media: TMDBMovie;
-  mediaType: MediaType;
+  mediaType: string;
   type: "long" | "short";
 }
 
 export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
-  const { watchList, setWatchList, watched, setWatched } = useSearchContext();
+  const {
+    watchList,
+    watched,
+    handleAddToWatchlist,
+    handleMarkAsWatched,
+    isLoading,
+  } = useSearchContext();
   const [isHovering, setIsHovering] = useState(false);
-  const [isWatched, setIsWatched] = useState(watched.includes(media.id));
-  const [isInWatchlist, setIsInWatchlist] = useState(
+  const [isWatched, setIsWatched] = useState<boolean>(
+    watched.includes(media.id)
+  );
+  const [isInWatchlist, setIsInWatchlist] = useState<boolean>(
     watchList.includes(media.id)
   );
-  const [isLoading, setIsLoading] = useState(false);
 
   const title = media.title || media.name || "";
   const releaseDate = media.release_date || media.first_air_date;
   const releaseYear = releaseDate ? new Date(releaseDate).getFullYear() : "";
 
-  const handleAddToWatchlist = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsLoading(true);
-
-    try {
-      if (isInWatchlist) {
-        // Remove from watchlist
-        const response = await removeFromWatchlist(media.id);
-        if (response && response.success) {
-          // Update local state
-          setIsInWatchlist(false);
-          setWatchList((prevWatchList) =>
-            prevWatchList.filter((id) => id !== media.id)
-          );
-        } else {
-          throw new Error("Failed to remove from watchlist");
-        }
-      } else {
-        // Add to watchlist
-        const response = await addToWatchlist(media.id, media);
-        if (response && response.success) {
-          // Update local state
-          setIsInWatchlist(true);
-          setWatchList((prevWatchList) => [...prevWatchList, media.id]);
-        } else {
-          throw new Error("Failed to add to watchlist");
-        }
-      }
-    } catch (err) {
-      console.error("Watchlist operation failed:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleMarkAsWatched = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsLoading(true);
-
-    try {
-      if (isWatched) {
-        // Remove from watched
-        const response = await removeFromWatched(media.id);
-        if (response && response.success) {
-          // Update local state
-          setIsWatched(false);
-          setWatched((prevWatched) =>
-            prevWatched.filter((id) => id !== media.id)
-          );
-        } else {
-          throw new Error("Failed to remove from watched");
-        }
-      } else {
-        // Add to watched
-        const response = await addToWatched(media.id, media);
-        if (response && response.success) {
-          // Update local state
-          setIsWatched(true);
-          setWatched((prevWatched) => [...prevWatched, media.id]);
-
-          // If the media is marked as watched, also remove from watchlist if it's there
-          if (isInWatchlist) {
-            await handleAddToWatchlist(e);
-          }
-        } else {
-          throw new Error("Failed to add to watched");
-        }
-      }
-    } catch (err) {
-      console.error("Watched operation failed:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    setIsWatched(watched.includes(media.id));
+    setIsInWatchlist(watchList.includes(media.id));
+  }, [watched, watchList]);
 
   return type === "short" ? (
     <Link
       href={`/${mediaType}/${media.id}`}
-      className="overflow-hidden bg-white block"
+      className="overflow-hidden block"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -140,7 +69,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
           )}
 
           {/* Rating badge */}
-          {(media.vote_average > 0 || media.vote_count > 0) && (
+          {(media.vote_average > 0 || media.vote_count > 0 || releaseDate) && (
             <div className="absolute top-2 right-2 bg-charcoal text-almond text-sm font-bold py-1 gap-0.5 rounded-md flex flex-col items-end">
               <div className="flex items-center gap-1 hover:bg-accent px-1 rounded">
                 <div className="flex items-center">
@@ -162,11 +91,13 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
           )}
 
           {/* Action buttons */}
-          <div className="absolute bottom-0 left-0 right-0 flex justify-end bg-gradient-to-t from-black/70 to-transparent">
+          <div className="absolute bottom-0 left-0 right-0 flex justify-end gap-1">
             <button
-              onClick={handleMarkAsWatched}
+              onClick={(e) =>
+                handleMarkAsWatched(e, media, isWatched, setIsWatched)
+              }
               disabled={isLoading}
-              className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer ${
+              className={`w-6 h-6 flex items-center justify-center cursor-pointer rounded ${
                 isWatched ? "bg-green-600" : "bg-white"
               }`}
               title={isWatched ? "Watched" : "Mark as watched"}
@@ -178,9 +109,11 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
             </button>
 
             <button
-              onClick={handleAddToWatchlist}
+              onClick={(e) =>
+                handleAddToWatchlist(e, media, isWatched, setIsInWatchlist)
+              }
               disabled={isLoading}
-              className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer ${
+              className={`w-6 h-6 flex items-center justify-center cursor-pointer rounded ${
                 isInWatchlist ? "bg-amber-400" : "bg-white"
               }`}
               title={isInWatchlist ? "Watched" : "Mark as watched"}
@@ -278,7 +211,9 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
                 );
               })}
               <button
-                onClick={handleMarkAsWatched}
+                onClick={(e) =>
+                  handleMarkAsWatched(e, media, isInWatchlist, setIsWatched)
+                }
                 disabled={isLoading}
                 className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
                   isWatched ? "bg-green-600" : "bg-white"
@@ -292,7 +227,14 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
               </button>
 
               <button
-                onClick={handleAddToWatchlist}
+                onClick={(e) =>
+                  handleAddToWatchlist(
+                    e,
+                    media,
+                    isInWatchlist,
+                    setIsInWatchlist
+                  )
+                }
                 disabled={isLoading}
                 className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
                   isInWatchlist ? "bg-amber-400" : "bg-white"

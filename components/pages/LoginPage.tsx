@@ -7,7 +7,6 @@ import Link from "next/link";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -15,6 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
+export const inputClass =
+  "bg-transparent hover:bg-accent transition-all rounded-none hover:rounded border-x-0 border-t-0 focus-visible:ring-0 focus-visible:ring-offset-0";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -73,15 +75,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <Card className="w-full max-w-md border-neutral-800">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
+    <div className="min-h-screen flex items-start justify-start font-mono pt-[15rem] px-[10%]">
+      <Card className="w-full max-w-md border-transparent bg-transparent">
+        <CardHeader className="space-y-1 items-start">
+          <CardTitle className="text-xl font-medium  text-center">
             login to shells
           </CardTitle>
-          <CardDescription className="text-center text-neutral-400">
+          {/* <CardDescription className="text-center text-neutral-400">
             enter your credentials to access your account
-          </CardDescription>
+          </CardDescription> */}
         </CardHeader>
         <CardContent>
           {error && (
@@ -92,48 +94,53 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">username</Label>
+              <Label className="text-neutral-400" htmlFor="username">
+                username
+              </Label>
               <Input
                 type="string"
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="bg-neutral-950 border-neutral-800"
+                className={inputClass}
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">password</Label>
+              <Label className="text-neutral-400" htmlFor="password">
+                password
+              </Label>
               <Input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="bg-neutral-950 border-neutral-800"
+                className={inputClass}
                 required
               />
             </div>
 
             <Button
               type="submit"
+              variant="ghost"
               disabled={loading}
               className="w-full cursor-pointer"
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "logging in..." : "login"}
             </Button>
           </form>
 
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-4 text-start text-sm">
             <p className="text-neutral-400">
-              Don&apos;t have an account?{" "}
+              {/* Don&apos;t have an account?{" "} */}
               <Link
                 href="/register"
                 className="text-white hover:text-white/80 transition-all"
               >
-                Register
+                register?
               </Link>
             </p>
           </div>

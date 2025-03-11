@@ -46,6 +46,8 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     // Protected routes
+    "/details/:path*",
+    "/discover/:path*",
     "/search/:path*",
     "/watchlist/:path*",
     "/watched/:path*",

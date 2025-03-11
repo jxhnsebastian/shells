@@ -3,17 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { inputClass } from "@/components/pages/LoginPage";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
@@ -75,15 +70,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <Card className="w-full max-w-md border-neutral-800">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Create an Account
+    <div className="min-h-screen flex items-start justify-start font-mono pt-[15rem] px-[10%]">
+      <Card className="w-full max-w-md border-transparent bg-transparent">
+        <CardHeader className="space-y-1 items-start">
+          <CardTitle className="text-xl font-medium text-center">
+            register
           </CardTitle>
-          <CardDescription className="text-center text-neutral-400">
+          {/* <CardDescription className="text-center text-neutral-400">
             Enter your details to create a new account
-          </CardDescription>
+          </CardDescription> */}
         </CardHeader>
         <CardContent>
           {error && (
@@ -94,55 +89,63 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label className="text-neutral-400" htmlFor="username">
+                username
+              </Label>
               <Input
                 type="text"
                 id="username"
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
-                className="bg-neutral-950 border-neutral-800"
+                className={inputClass}
                 required
                 minLength={3}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label className="text-neutral-400" htmlFor="email">
+                email
+              </Label>
               <Input
                 type="email"
                 id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="bg-neutral-950 border-neutral-800"
+                className={inputClass}
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label className="text-neutral-400" htmlFor="password">
+                password
+              </Label>
               <Input
                 type="password"
                 id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="bg-neutral-950 border-neutral-800"
+                className={inputClass}
                 required
                 minLength={8}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Label className="text-neutral-400" htmlFor="confirmPassword">
+                confirm password
+              </Label>
               <Input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="bg-neutral-950 border-neutral-800"
+                className={inputClass}
                 required
                 minLength={8}
               />
@@ -150,21 +153,22 @@ export default function RegisterPage() {
 
             <Button
               type="submit"
+              variant="ghost"
               disabled={loading}
               className="w-full cursor-pointer"
             >
-              {loading ? "Creating Account..." : "Register"}
+              {loading ? "creating account..." : "register"}
             </Button>
           </form>
 
-          <div className="mt-4 text-center text-sm">
+          <div className="mt-4 text-start text-sm">
             <p className="text-neutral-400">
-              Already have an account?{" "}
+              {/* Already have an account?{" "} */}
               <Link
                 href="/login"
                 className="text-white hover:text-white/80 transition-all"
               >
-                Login
+                login?
               </Link>
             </p>
           </div>

@@ -3,16 +3,20 @@
 import { TMDBMovie } from "@/lib/types";
 import { Loader } from "lucide-react";
 import MediaCard from "../media/MediaCard";
+import { useSearchContext } from "../context/SearchContext";
 
 interface SearchResultsProps {
   results: TMDBMovie[];
   isLoading: boolean;
+  layout?: "grid" | "list";
 }
 
 export default function SearchResults({
   results,
   isLoading,
+  layout,
 }: SearchResultsProps) {
+  const { mediaType } = useSearchContext();
   if (isLoading) {
     return (
       <div className="p-4 flex justify-center items-center h-24">
@@ -30,9 +34,20 @@ export default function SearchResults({
   }
 
   return (
-    <div>
+    <div
+      className={
+        layout === "grid"
+          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+          : ""
+      }
+    >
       {results.map((result, index) => (
-        <MediaCard key={index} media={result} mediaType="movie" type="long" />
+        <MediaCard
+          key={index}
+          media={result}
+          mediaType={mediaType}
+          type="long"
+        />
       ))}
     </div>
   );

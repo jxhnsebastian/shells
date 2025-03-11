@@ -1016,12 +1016,13 @@ export const genres = [
 ];
 
 export const sortOptions: Record<string, string> = {
-  "popularity.desc": "Most Popular",
-  "popularity.asc": "Least Popular",
-  "vote_average.desc": "Top Rated",
-  "vote_average.asc": "Lowest Rated",
-  "vote_count.desc": "Most Votes",
-  "vote_count.asc": "Least Votes",
-  "primary_release_date.desc": "Newest",
-  "primary_release_date.asc": "Oldest",
+  "popularity.desc": "most popular",
+  "popularity.asc": "least popular",
+  "vote_average.desc": "top rated",
+  "vote_average.asc": "lowest rated",
+  "vote_count.desc": "most votes",
+  "vote_count.asc": "least votes",
+  recent: "recent",
+  upcoming: "upcoming",
+  "primary_release_date.asc": "oldest",
 };

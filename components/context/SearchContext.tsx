@@ -1,8 +1,16 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { checkMediaStatus, searchMedia } from "@/lib/routes";
-import { MediaType, TMDBMovie } from "@/lib/types";
+import {
+  addToWatched,
+  addToWatchlist,
+  checkMediaStatus,
+  getMediaDetails,
+  removeFromWatched,
+  removeFromWatchlist,
+  searchMedia,
+} from "@/lib/routes";
+import { MediaType, MovieDetail, TMDBMovie } from "@/lib/types";
 import React, {
   createContext,
   useContext,
@@ -12,6 +20,8 @@ import React, {
 } from "react";
 
 interface SearchContextProps {
+  details: MovieDetail | null;
+  setDetails: (value: MovieDetail | null) => void;
   results: TMDBMovie[];
   setResults: (value: TMDBMovie[]) => void;
   movies: TMDBMovie[];
@@ -28,6 +38,8 @@ interface SearchContextProps {
   setSort: (value: string) => void;
   language: string;
   setLanguage: (value: string) => void;
+  adult: boolean;
+  setAdult: (value: boolean) => void;
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
   isPageLoading: boolean;
@@ -43,8 +55,25 @@ interface SearchContextProps {
   watchList: number[];
   setWatchList: React.Dispatch<React.SetStateAction<number[]>>;
 
-  performSearch: (searchQuery: string, isPage?: boolean) => Promise<void>;
+  performSearch: (
+    searchQuery: string,
+    isPage?: boolean,
+    pageNo?: number
+  ) => Promise<void>;
+  getDetails: (id: number, mediaType?: MediaType) => Promise<void>;
   checkList: (ids: number[]) => Promise<void>;
+  handleAddToWatchlist: (
+    e: React.MouseEvent,
+    media: TMDBMovie | MovieDetail,
+    isInWatchlist: boolean,
+    setIsInWatchlist: React.Dispatch<React.SetStateAction<boolean>>
+  ) => Promise<void>;
+  handleMarkAsWatched: (
+    e: React.MouseEvent,
+    media: TMDBMovie | MovieDetail,
+    isWatched: boolean,
+    setIsWatched: React.Dispatch<React.SetStateAction<boolean>>
+  ) => Promise<void>;
 }
 
 const SearchContext = createContext<SearchContextProps | undefined>(undefined);
@@ -67,10 +96,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [query, setQuery] = useState<string>("");
   const [mediaType, setMediaType] = useState<MediaType>("movie");
   const [year, setYear] = useState<string>("");
-  const [sort, setSort] = useState<string>("vote_average.desc");
+  const [sort, setSort] = useState<string>("popularity.desc");
   const [language, setLanguage] = useState<string>("en");
+  const [adult, setAdult] = useState<boolean>(true);
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
+  const [details, setDetails] = useState<MovieDetail | null>(null);
   const [items, setItems] = useState<TMDBMovie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
@@ -86,9 +117,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     setWatchList(status.watchList);
   };
 
-  const performSearch = async (searchQuery: string, isPage?: boolean) => {
+  const performSearch = async (
+    searchQuery: string,
+    isPage?: boolean,
+    pageNo?: number
+  ) => {
     if (isLoading) return;
-    if (!searchQuery || searchQuery.length < 2) {
+    console.log(searchQuery);
+    if (!isPage && (!searchQuery || searchQuery.length < 2)) {
       setResults([]);
       setTotalPages(0);
       setTotalMovies(0);
@@ -103,12 +139,9 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       const response = await searchMedia({
         query: searchQuery,
         media_type: mediaType,
-        include_adult: true,
-        page: page,
-        year:
-          !isNaN(parsedYear) && parsedYear <= new Date().getFullYear()
-            ? parsedYear
-            : undefined,
+        include_adult: adult,
+        page: pageNo ?? page,
+        year: !isNaN(parsedYear) ? parsedYear : undefined,
         sort_by: sort,
         language: language || undefined,
       });
@@ -130,6 +163,122 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     }
   };
 
+  const getDetails = async (id: number, mediaType?: MediaType) => {
+    if (isLoading) return;
+    if (!id) {
+      setDetails(null);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await getMediaDetails({
+        id,
+        media_type: mediaType,
+      });
+
+      setDetails(response);
+      await checkList([
+        ...response.recommendations.results.map((movie) => movie.id),
+        ...response.similar.results.map((movie) => movie.id),
+      ]);
+    } catch (error) {
+      console.error("Error:", error);
+      setDetails(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddToWatchlist = async (
+    e: React.MouseEvent,
+    media: TMDBMovie | MovieDetail,
+    isInWatchlist: boolean,
+    setIsInWatchlist: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLoading(true);
+
+    try {
+      if (isInWatchlist) {
+        // Remove from watchlist
+        const response = await removeFromWatchlist(media.id);
+        if (response && response.success) {
+          // Update local state
+          setIsInWatchlist(false);
+          setWatchList((prevWatchList) =>
+            prevWatchList.filter((id) => id !== media.id)
+          );
+        } else {
+          throw new Error("Failed to remove from watchlist");
+        }
+      } else {
+        // Add to watchlist
+        const response = await addToWatchlist(media.id, media);
+        if (response && response.success) {
+          // Update local state
+          setIsInWatchlist(true);
+          setWatchList((prevWatchList) => [...prevWatchList, media.id]);
+          setWatched((prevWatched) =>
+            prevWatched.filter((id) => id !== media.id)
+          );
+        } else {
+          throw new Error("Failed to add to watchlist");
+        }
+      }
+    } catch (err) {
+      console.error("Watchlist operation failed:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMarkAsWatched = async (
+    e: React.MouseEvent,
+    media: TMDBMovie | MovieDetail,
+    isWatched: boolean,
+    setIsWatched: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLoading(true);
+
+    try {
+      if (isWatched) {
+        // Remove from watched
+        const response = await removeFromWatched(media.id);
+        if (response && response.success) {
+          // Update local state
+          setIsWatched(false);
+          setWatched((prevWatched) =>
+            prevWatched.filter((id) => id !== media.id)
+          );
+        } else {
+          throw new Error("Failed to remove from watched");
+        }
+      } else {
+        // Add to watched
+        const response = await addToWatched(media.id, media);
+        if (response && response.success) {
+          // Update local state
+          setIsWatched(true);
+          setWatched((prevWatched) => [...prevWatched, media.id]);
+          setWatchList((prevWatchList) =>
+            prevWatchList.filter((id) => id !== media.id)
+          );
+        } else {
+          throw new Error("Failed to add to watched");
+        }
+      }
+    } catch (err) {
+      console.error("Watched operation failed:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <SearchContext.Provider
       value={{
@@ -143,8 +292,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         setSort,
         language,
         setLanguage,
+        adult,
+        setAdult,
         movies,
         setMovies,
+        details,
+        setDetails,
         items,
         setItems,
         results,
@@ -165,6 +318,9 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         setWatchList,
         performSearch,
         checkList,
+        getDetails,
+        handleAddToWatchlist,
+        handleMarkAsWatched,
       }}
     >
       {children}

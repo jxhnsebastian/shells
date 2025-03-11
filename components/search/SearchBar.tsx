@@ -10,6 +10,7 @@ import {
   Globe,
   Check,
   LucideFilm,
+  CatIcon,
 } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { MediaType } from "@/lib/types";
@@ -39,6 +40,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { languages, sortOptions } from "@/lib/constants";
 import { useSearchContext } from "../context/SearchContext";
+import { Checkbox } from "../ui/checkbox";
 
 export default function SearchBar() {
   const {
@@ -52,6 +54,8 @@ export default function SearchBar() {
     setSort,
     language,
     setLanguage,
+    adult,
+    setAdult,
     movies,
     setMovies,
     results,
@@ -73,8 +77,9 @@ export default function SearchBar() {
   useEffect(() => {
     let count = 0;
     if (year) count++;
-    if (sort && sort !== "popularity.desc") count++;
+    if (sort) count++;
     if (language) count++;
+    if (adult) count++;
     setActiveFilters(count);
   }, [year, sort, language]);
 
@@ -115,7 +120,7 @@ export default function SearchBar() {
           event.preventDefault();
           performSearch(query);
         }}
-        className="space-y-2"
+        className="space-y-2 flex flex-col"
       >
         <div className="flex items-center w-full bg-background border rounded-lg shadow-sm">
           <Select
@@ -170,7 +175,7 @@ export default function SearchBar() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-row flex-wrap max-w-full items-center gap-2">
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline" size="sm" className="h-8 gap-1">
@@ -262,15 +267,34 @@ export default function SearchBar() {
             </PopoverContent>
           </Popover>
 
+          <div className="flex items-center space-x-2 border rounded-md px-0.5 h-[31px]">
+            <Checkbox
+              checked={adult}
+              onClick={() => {
+                setAdult(!adult);
+              }}
+              id="adult"
+              className="border-white"
+            />
+            <CatIcon />
+          </div>
+
           {activeFilters > 0 && (
-            <Badge variant="secondary" className="h-5 text-xs px-2">
-              {activeFilters} filter{activeFilters > 1 ? "s" : ""}
+            <Badge
+              onClick={() => {
+                performSearch(query, true, 1);
+              }}
+              variant="secondary"
+              className="h-5 text-xs px-2 cursor-pointer"
+            >
+              apply {activeFilters} filter{activeFilters > 1 ? "s" : ""}
             </Badge>
           )}
 
           {movies.length > 0 && (
             <Badge variant="secondary" className="h-5 text-xs px-2">
-              page {page} of {totalPages}. total {totalMovies} movies
+              page {page} of {totalPages}. total {totalMovies}
+              {mediaType === "movie" ? " movies" : " shows"}
             </Badge>
           )}
         </div>
@@ -285,9 +309,9 @@ export default function SearchBar() {
               <Button
                 onClick={handleViewAllResults}
                 variant="ghost"
-                className="text-xs w-full"
+                className="text-xs w-full cursor-pointer"
               >
-                View all results
+                view all results
               </Button>
             </div>
           )}

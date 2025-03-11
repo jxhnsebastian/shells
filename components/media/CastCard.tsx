@@ -18,8 +18,8 @@ export function CastCard({ image, name, character }: CastCardProps) {
           className="object-cover w-full h-full"
         />
       </div>
-      <h3 className="font-medium text-white">{name}</h3>
-      <p className="text-sm text-gray-400">{character}</p>
+      <h3 className="font-medium text-white truncate">{name}</h3>
+      <p className="text-sm text-gray-400 truncate">{character}</p>
     </div>
   )
 }

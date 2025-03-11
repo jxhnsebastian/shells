@@ -180,6 +180,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
 
       setDetails(response);
       await checkList([
+        response.id,
         ...response.recommendations.results.map((movie) => movie.id),
         ...response.similar.results.map((movie) => movie.id),
       ]);

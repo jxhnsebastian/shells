@@ -95,7 +95,7 @@ export default function MediaDetailsPage({
               src={getImageUrl(details?.backdrop_path, "original") || ""}
               alt="Movie background"
               fill
-              className="object-cover max-h-[80dvh]"
+              className="object-cover object-top max-h-[80dvh]"
               priority
             />
             <div className="absolute bottom-0 w-full h-[40dvh] bg-gradient-to-t from-black from-20% via-black via-50% to-black/1"></div>
@@ -318,6 +318,32 @@ export default function MediaDetailsPage({
                               }
                               name={actor.name}
                               character={actor.character}
+                            />
+                          ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Top Cast Section */}
+                  {(activeTab === "overview" || activeTab === "crew") && (
+                    <div className="mb-16">
+                      <SectionHeader title="crew" setTab={setActiveTab} />
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                        {details.credits.crew
+                          .slice(
+                            0,
+                            activeTab === "overview"
+                              ? 5
+                              : details.credits.crew.length
+                          )
+                          .map((actor) => (
+                            <CastCard
+                              key={actor.id}
+                              image={
+                                getImageUrl(actor.profile_path, "w185") || ""
+                              }
+                              name={actor.name}
+                              character={actor.job}
                             />
                           ))}
                       </div>

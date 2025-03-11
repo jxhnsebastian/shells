@@ -304,6 +304,7 @@ export default function MediaDetailsPage({
                       <SectionHeader title="cast" setTab={setActiveTab} />
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {details.credits.cast
+                          .sort((a, b) => b.popularity - a.popularity)
                           .slice(
                             0,
                             activeTab === "overview"
@@ -330,6 +331,7 @@ export default function MediaDetailsPage({
                       <SectionHeader title="crew" setTab={setActiveTab} />
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                         {details.credits.crew
+                          .sort((a, b) => b.popularity - a.popularity)
                           .slice(
                             0,
                             activeTab === "overview"

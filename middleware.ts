@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Rate limit check for all api routes
-  if (path.startsWith("/api/")) {
+  if (path.startsWith("/api/") && !path.includes("auth")) {
     const rateLimitResult = await rateLimit(request, RATE_LIMIT_CONFIG);
     if (rateLimitResult) return rateLimitResult;
   }

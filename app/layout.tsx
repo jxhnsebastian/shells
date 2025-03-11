@@ -30,10 +30,10 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/icons/shell_icon.svg", sizes: "32x32", type: "image/svg" },
-      { url: "/icons/shell_icon.svg", sizes: "16x16", type: "image/svg" },
+      { url: "/icons/icon32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: "/icons/shell_icon.svg",
+    apple: "/icons/icon512.png",
   },
 };
 

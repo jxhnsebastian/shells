@@ -98,7 +98,7 @@ export default function MediaDetailsPage({
               className="object-cover max-h-[80dvh]"
               priority
             />
-            <div className="absolute bottom-0 w-full h-[40dvh] bg-gradient-to-t from-black from-20% via-black via-60% to-black/10"></div>
+            <div className="absolute bottom-0 w-full h-[40dvh] bg-gradient-to-t from-black from-20% via-black via-50% to-black/1"></div>
           </div>
 
           {/* Main content */}

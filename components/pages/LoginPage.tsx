@@ -27,10 +27,10 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/search";
+  const callbackUrl = searchParams?.get("callbackUrl") || "/search";
 
   // Check for error parameter from NextAuth
-  const authError = searchParams.get("error");
+  const authError = searchParams?.get("error");
   if (authError && !error) {
     if (authError === "CredentialsSignin") {
       setError("Invalid username or password");

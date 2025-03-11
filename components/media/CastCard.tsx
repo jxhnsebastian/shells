@@ -11,7 +11,7 @@ export function CastCard({ image, name, character }: CastCardProps) {
     <div className="flex flex-col">
       <div className="rounded-lg overflow-hidden mb-2">
         <Image
-          src={image || "/placeholder.svg"}
+          src={image || ""}
           alt={name}
           width={180}
           height={270}

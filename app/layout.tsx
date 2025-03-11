@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Shells",
-  description: "Your local Shells",
+  description: "thinking about it",
   applicationName: "Shells",
   appleWebApp: {
     capable: true,
@@ -30,8 +30,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/icons/icon32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icons/icon16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/icon512.png", sizes: "512x512", type: "image/png" },
     ],
     apple: "/icons/icon512.png",
   },

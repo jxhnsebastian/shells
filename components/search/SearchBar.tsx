@@ -12,7 +12,6 @@ import {
   LucideFilm,
   CatIcon,
 } from "lucide-react";
-import { useDebounce } from "@/hooks/useDebounce";
 import { MediaType } from "@/lib/types";
 import SearchResults from "./SearchResults";
 import {
@@ -71,7 +70,6 @@ export default function SearchBar() {
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const debouncedQuery = useDebounce(query, 500);
 
   // Count active filters
   useEffect(() => {
@@ -82,10 +80,6 @@ export default function SearchBar() {
     if (adult) count++;
     setActiveFilters(count);
   }, [year, sort, language]);
-
-  useEffect(() => {
-    performSearch(debouncedQuery);
-  }, [debouncedQuery]);
 
   const handleClearSearch = () => {
     setQuery("");

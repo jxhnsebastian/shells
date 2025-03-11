@@ -22,7 +22,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
     watched,
     handleAddToWatchlist,
     handleMarkAsWatched,
-    isLoading,
+    isAdding,
   } = useSearchContext();
   const [isHovering, setIsHovering] = useState(false);
   const [isWatched, setIsWatched] = useState<boolean>(
@@ -96,7 +96,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
               onClick={(e) =>
                 handleMarkAsWatched(e, media, isWatched, setIsWatched)
               }
-              disabled={isLoading}
+              disabled={isAdding}
               className={`w-6 h-6 flex items-center justify-center cursor-pointer rounded ${
                 isWatched ? "bg-green-600" : "bg-white"
               }`}
@@ -112,7 +112,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
               onClick={(e) =>
                 handleAddToWatchlist(e, media, isWatched, setIsInWatchlist)
               }
-              disabled={isLoading}
+              disabled={isAdding}
               className={`w-6 h-6 flex items-center justify-center cursor-pointer rounded ${
                 isInWatchlist ? "bg-amber-400" : "bg-white"
               }`}
@@ -214,7 +214,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
                 onClick={(e) =>
                   handleMarkAsWatched(e, media, isInWatchlist, setIsWatched)
                 }
-                disabled={isLoading}
+                disabled={isAdding}
                 className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
                   isWatched ? "bg-green-600" : "bg-white"
                 }`}
@@ -235,7 +235,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
                     setIsInWatchlist
                   )
                 }
-                disabled={isLoading}
+                disabled={isAdding}
                 className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
                   isInWatchlist ? "bg-amber-400" : "bg-white"
                 }`}

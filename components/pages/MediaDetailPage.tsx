@@ -36,7 +36,8 @@ export default function MediaDetailsPage({
     watched,
     handleAddToWatchlist,
     handleMarkAsWatched,
-    isLoading,
+    isPageLoading,
+    isAdding,
   } = useSearchContext();
   const [isWatched, setIsWatched] = useState<boolean>(
     details ? watched.includes(details.id) : false
@@ -82,7 +83,7 @@ export default function MediaDetailsPage({
         </div>
       }
     >
-      {!details || isLoading ? (
+      {!details || isPageLoading ? (
         <div className="flex items-center gap-1">
           loading details
           <Loader className="h-5 w-5 animate-spin text-gray-500" />
@@ -175,7 +176,7 @@ export default function MediaDetailsPage({
                     onClick={(e) =>
                       handleMarkAsWatched(e, details, isWatched, setIsWatched)
                     }
-                    disabled={isLoading}
+                    disabled={isAdding}
                     className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
                       isWatched ? "bg-green-600" : "bg-white"
                     }`}
@@ -196,7 +197,7 @@ export default function MediaDetailsPage({
                         setIsInWatchlist
                       )
                     }
-                    disabled={isLoading}
+                    disabled={isAdding}
                     className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
                       isInWatchlist ? "bg-amber-400" : "bg-white"
                     }`}

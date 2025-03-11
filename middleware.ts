@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { rateLimit } from "./lib/rateLimit";
 
 const RATE_LIMIT_CONFIG = {
-  limit: 1,
+  limit: 2,
   window: 1000, // in milliseconds
 };
 

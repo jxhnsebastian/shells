@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useDebounce } from "@/hooks/useDebounce";
 import {
   addToWatched,
   addToWatchlist,
@@ -11,6 +12,7 @@ import {
   searchMedia,
 } from "@/lib/routes";
 import { MediaType, MovieDetail, TMDBMovie } from "@/lib/types";
+import { usePathname } from "next/navigation";
 import React, {
   createContext,
   useContext,
@@ -44,6 +46,8 @@ interface SearchContextProps {
   setIsLoading: (value: boolean) => void;
   isPageLoading: boolean;
   setPageIsLoading: (value: boolean) => void;
+  isAdding: boolean;
+  setIsAdding: (value: boolean) => void;
   page: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
   totalPages: number;
@@ -84,6 +88,7 @@ interface SearchProviderProps {
 
 export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const { isAuthenticated } = useAuth();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -104,6 +109,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [details, setDetails] = useState<MovieDetail | null>(null);
   const [items, setItems] = useState<TMDBMovie[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isAdding, setIsAdding] = useState<boolean>(false);
   const [isPageLoading, setPageIsLoading] = useState<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -111,10 +117,12 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [watched, setWatched] = useState<number[]>([]);
   const [watchList, setWatchList] = useState<number[]>([]);
 
+  const debouncedQuery = useDebounce(query, 500);
+
   const checkList = async (ids: number[]) => {
     const status = await checkMediaStatus(ids);
-    setWatched(status.watched);
-    setWatchList(status.watchList);
+    setWatched([...new Set([...watched, ...status.watched])]);
+    setWatchList([...new Set([...watchList, ...status.watchList])]);
   };
 
   const performSearch = async (
@@ -164,13 +172,13 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   };
 
   const getDetails = async (id: number, mediaType?: MediaType) => {
-    if (isLoading) return;
+    if (isPageLoading) return;
     if (!id) {
       setDetails(null);
       return;
     }
 
-    setIsLoading(true);
+    setPageIsLoading(true);
 
     try {
       const response = await getMediaDetails({
@@ -188,7 +196,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
       console.error("Error:", error);
       setDetails(null);
     } finally {
-      setIsLoading(false);
+      setPageIsLoading(false);
     }
   };
 
@@ -200,7 +208,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLoading(true);
+    setIsAdding(true);
 
     try {
       if (isInWatchlist) {
@@ -232,7 +240,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     } catch (err) {
       console.error("Watchlist operation failed:", err);
     } finally {
-      setIsLoading(false);
+      setIsAdding(false);
     }
   };
 
@@ -244,7 +252,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   ) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsLoading(true);
+    setIsAdding(true);
 
     try {
       if (isWatched) {
@@ -276,9 +284,19 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     } catch (err) {
       console.error("Watched operation failed:", err);
     } finally {
-      setIsLoading(false);
+      setIsAdding(false);
     }
   };
+
+  useEffect(() => {
+    if (page > 0 && isAuthenticated && pathname?.includes("search"))
+      performSearch(query, true);
+  }, [page, isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated && pathname?.includes("search"))
+      performSearch(debouncedQuery);
+  }, [debouncedQuery, isAuthenticated]);
 
   return (
     <SearchContext.Provider
@@ -307,6 +325,8 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         setIsLoading,
         isPageLoading,
         setPageIsLoading,
+        isAdding,
+        setIsAdding,
         page,
         setPage,
         totalPages,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, Suspense } from "react";
+import { Suspense } from "react";
 import MediaGrid from "@/components/media/MediaGrid";
 import SearchBar from "@/components/search/SearchBar";
 import { Pagination } from "@/components/ui/pagination";
@@ -8,20 +8,8 @@ import { useSearchContext } from "@/components/context/SearchContext";
 import { Loader } from "lucide-react";
 
 export default function SearchPage() {
-  const {
-    query,
-    movies,
-    page,
-    setPage,
-    totalPages,
-    performSearch,
-    isPageLoading,
-    mediaType,
-  } = useSearchContext();
-
-  useEffect(() => {
-    if (page > 0) performSearch(query, true);
-  }, [page]);
+  const { movies, page, setPage, totalPages, isPageLoading, mediaType } =
+    useSearchContext();
 
   return (
     <div className="space-y-8">

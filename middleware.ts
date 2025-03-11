@@ -1,19 +1,16 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
+import { rateLimit } from "./lib/rateLimit";
+
+const RATE_LIMIT_CONFIG = {
+  limit: 1,
+  window: 1000, // in milliseconds
+};
 
 export async function middleware(request: NextRequest) {
-  // Get the pathname
   const path = request.nextUrl.pathname;
-
-  // Define public paths that don't require authentication
   const isPublicPath = path === "/login" || path === "/register";
-
-  // Check if path starts with /api/watchlist or /api/watched
-  const isProtectedApi =
-    path.startsWith("/api/watchlist") || path.startsWith("/api/watched");
-
-  // Get the token
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
@@ -40,6 +37,12 @@ export async function middleware(request: NextRequest) {
     );
   }
 
+  // Rate limit check for all api routes
+  if (path.startsWith("/api/")) {
+    const rateLimitResult = await rateLimit(request, RATE_LIMIT_CONFIG);
+    if (rateLimitResult) return rateLimitResult;
+  }
+
   return NextResponse.next();
 }
 
@@ -51,9 +54,10 @@ export const config = {
     "/search/:path*",
     "/watchlist/:path*",
     "/watched/:path*",
+    "/movie/:path*",
+    "/tv/:path*",
     // API routes
-    "/api/watchlist/:path*",
-    "/api/watched/:path*",
+    "/api/:path*",
     // Auth pages
     "/login",
     "/register",

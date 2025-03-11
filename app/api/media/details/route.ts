@@ -1,22 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit } from "@/lib/rateLimit";
 
-// Configure rate limit: 1 request per second
-const RATE_LIMIT_CONFIG = {
-  limit: 2,
-  window: 1000, // 1 second in milliseconds
-};
-
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResult = rateLimit(request, RATE_LIMIT_CONFIG);
-  if (rateLimitResult) return rateLimitResult;
-
   try {
-    const {
-      id,
-      media_type = "movie",
-    } = await request.json();
+    const { id, media_type = "movie" } = await request.json();
 
     // Build the URL with query parameters
     const url = `https://api.themoviedb.org/3/${media_type}/${id}?append_to_response=credits%2Csimilar%2Crecommendations&language=en-US`;

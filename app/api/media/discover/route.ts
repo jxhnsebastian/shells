@@ -1,17 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { rateLimit } from "@/lib/rateLimit";
-
-// Configure rate limit: 1 request per second
-const RATE_LIMIT_CONFIG = {
-  limit: 1,
-  window: 1000, // 1 second in milliseconds
-};
 
 export async function POST(request: NextRequest) {
-  // Apply rate limiting
-  const rateLimitResult = rateLimit(request, RATE_LIMIT_CONFIG);
-  if (rateLimitResult) return rateLimitResult;
-
   try {
     const {
       query,

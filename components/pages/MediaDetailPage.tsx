@@ -51,7 +51,6 @@ export default function MediaDetailsPage({
     "cast",
     "crew",
     "videos",
-    "photos",
     "recommendations",
     "similar",
   ];
@@ -143,13 +142,13 @@ export default function MediaDetailsPage({
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <Calendar className="h-3.5 w-3.5 mr-1 text-white" />
+                      <Calendar className="h-3.5 w-3.5 mr-1 text-neutral-400" />
                       <span className="font-medium">
                         {details?.release_date ?? ""}
                       </span>
                     </div>
                     <div className="flex items-center">
-                      <Clock className="h-3.5 w-3.5 mr-1 text-white" />
+                      <Clock className="h-3.5 w-3.5 mr-1 text-neutral-400" />
                       <span className="font-medium">2h 19m</span>
                     </div>
                   </div>
@@ -177,13 +176,13 @@ export default function MediaDetailsPage({
                       handleMarkAsWatched(e, details, isWatched, setIsWatched)
                     }
                     disabled={isAdding}
-                    className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
+                    className={`w-7 h-7 flex items-center justify-center cursor-pointer rounded ${
                       isWatched ? "bg-green-600" : "bg-white"
                     }`}
                     title={isWatched ? "Watched" : "Mark as watched"}
                   >
                     <Check
-                      size={16}
+                      size={20}
                       className={isWatched ? "text-black" : "text-black"}
                     />
                   </button>
@@ -193,12 +192,12 @@ export default function MediaDetailsPage({
                       handleAddToWatchlist(
                         e,
                         details,
-                        isWatched,
+                        isInWatchlist,
                         setIsInWatchlist
                       )
                     }
                     disabled={isAdding}
-                    className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
+                    className={`w-7 h-7 flex items-center justify-center cursor-pointer rounded ${
                       isInWatchlist ? "bg-amber-400" : "bg-white"
                     }`}
                     title={isInWatchlist ? "Watched" : "Mark as watched"}
@@ -312,9 +311,9 @@ export default function MediaDetailsPage({
                               ? 5
                               : details.credits.cast.length
                           )
-                          .map((actor) => (
+                          .map((actor, index) => (
                             <CastCard
-                              key={actor.id}
+                              key={index}
                               image={
                                 getImageUrl(actor.profile_path, "w185") || ""
                               }
@@ -326,7 +325,7 @@ export default function MediaDetailsPage({
                     </div>
                   )}
 
-                  {/* Top Cast Section */}
+                  {/* Crew Section */}
                   {(activeTab === "overview" || activeTab === "crew") && (
                     <div className="mb-16">
                       <SectionHeader title="crew" setTab={setActiveTab} />
@@ -339,9 +338,9 @@ export default function MediaDetailsPage({
                               ? 5
                               : details.credits.crew.length
                           )
-                          .map((actor) => (
+                          .map((actor, index) => (
                             <CastCard
-                              key={actor.id}
+                              key={index}
                               image={
                                 getImageUrl(actor.profile_path, "w185") || ""
                               }

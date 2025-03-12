@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart, Check, Star, BookMarked, Calendar } from "lucide-react";
-import { TMDBMovie } from "@/lib/types";
+import { MovieDetail, TMDBMovie } from "@/lib/types";
 import { getGenreName, getImageUrl } from "@/lib/helpers";
 import { Badge } from "../ui/badge";
 import { useSearchContext } from "../context/SearchContext";
 import { Card } from "@/components/ui/card";
 
 interface MediaCardProps {
-  media: TMDBMovie;
+  media: TMDBMovie | MovieDetail;
   mediaType: string;
   type: "long" | "short";
 }
@@ -32,8 +32,8 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
     watchList.includes(media.id)
   );
 
-  const title = media.title || media.name || "";
-  const releaseDate = media.release_date || media.first_air_date;
+  const title = media.title || (media as TMDBMovie).name || "";
+  const releaseDate = media.release_date || (media as TMDBMovie).first_air_date;
   const releaseYear = releaseDate ? new Date(releaseDate).getFullYear() : "";
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
   return type === "short" ? (
     <Link
       href={`/${mediaType}/${media.id}`}
-      className="overflow-hidden block"
+      className="overflow-hidden block group rounded"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
@@ -97,26 +97,28 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
                 handleMarkAsWatched(e, media, isWatched, setIsWatched)
               }
               disabled={isAdding}
-              className={`w-6 h-6 flex items-center justify-center cursor-pointer rounded ${
+              className={`w-7 h-7 flex items-center justify-center cursor-pointer rounded ${
                 isWatched ? "bg-green-600" : "bg-white"
               }`}
               title={isWatched ? "Watched" : "Mark as watched"}
             >
               <Check
-                size={16}
+                size={20}
                 className={isWatched ? "text-black" : "text-black"}
               />
             </button>
 
             <button
               onClick={(e) =>
-                handleAddToWatchlist(e, media, isWatched, setIsInWatchlist)
+                handleAddToWatchlist(e, media, isInWatchlist, setIsInWatchlist)
               }
               disabled={isAdding}
-              className={`w-6 h-6 flex items-center justify-center cursor-pointer rounded ${
+              className={`w-7 h-7 flex items-center justify-center cursor-pointer rounded ${
                 isInWatchlist ? "bg-amber-400" : "bg-white"
               }`}
-              title={isInWatchlist ? "Watched" : "Mark as watched"}
+              title={
+                isInWatchlist ? "Added to watch list" : "Add to watch list"
+              }
             >
               <BookMarked
                 size={16}
@@ -127,7 +129,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
         </div>
 
         {/* Text content */}
-        <div className="p-2 bg-black">
+        <div className="p-2 bg-black group-hover:bg-white/5">
           <h3 className="font-bold text-neutral-500 truncate text-md">
             {title}
           </h3>
@@ -140,12 +142,12 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
       href={`/${mediaType}/${media.id}`}
       className="block w-full"
     >
-      <Card className="flex flex-row p-3 hover:bg-white/5 transition-colors border-none shadow-sm mb-2">
+      <Card className="flex flex-row p-3 hover:bg-white/5 border-none shadow-sm mb-2 transition-all">
         <div className="flex-shrink-0 w-[80px] h-[120px] relative overflow-hidden rounded">
           {media.poster_path ? (
             <Image
               src={getImageUrl(media.poster_path, "w92") || ""}
-              alt={media.title || media.name || ""}
+              alt={title}
               width={80}
               height={120}
               className="object-cover w-full h-full rounded"
@@ -162,17 +164,15 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
         <div className="flex-1 min-w-0 ml-0 flex flex-col justify-between">
           <div>
             <h4 className="font-semibold w-fit text-neutral-100 leading-tight truncate">
-              {media.title || media.name}
+              {title}
             </h4>
 
             <div className="flex items-center gap-3 mt-1.5 text-xs">
-              {(media.release_date || media.first_air_date) && (
+              {releaseDate && (
                 <div className="flex items-center text-neutral-400">
                   <Calendar className="h-3.5 w-3.5 mr-1" />
                   <span>
-                    {new Date(
-                      media.release_date || media.first_air_date || ""
-                    ).getFullYear() || "Unknown"}
+                    {new Date(releaseDate || "").getFullYear() || "Unknown"}
                   </span>
                 </div>
               )}
@@ -188,7 +188,7 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
 
               {media.vote_count > 0 && (
                 <div className="flex items-center">
-                  <Heart className="h-3.5 w-3.5 mr-1 text-yellow-500" />
+                  <Heart className="h-3.5 w-3.5 mr-1 text-red-500" />
                   <span className="font-medium text-neutral-400">
                     {media.vote_count.toFixed(1)}
                   </span>
@@ -197,31 +197,37 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
             </div>
 
             <div className="flex flex-wrap gap-1.5 mt-2">
-              {media.genre_ids.slice(0, 2).map((genreId) => {
-                const genre = getGenreName(genreId);
-                if (!genre) return null;
-                return (
-                  <Badge
-                    key={genreId}
-                    variant="secondary"
-                    className="px-2 py-0.5 text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded"
-                  >
-                    {genre}
-                  </Badge>
-                );
-              })}
+              {(
+                (media as TMDBMovie)?.genre_ids ??
+                (media as MovieDetail)?.genres?.map((genre) => genre.id) ??
+                []
+              )
+                .slice(0, 2)
+                .map((genreId, index) => {
+                  const genre = getGenreName(genreId);
+                  if (!genre) return null;
+                  return (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="px-2 py-0.5 text-xs font-medium bg-neutral-100 text-neutral-700 hover:bg-neutral-200 rounded"
+                    >
+                      {genre}
+                    </Badge>
+                  );
+                })}
               <button
                 onClick={(e) =>
-                  handleMarkAsWatched(e, media, isInWatchlist, setIsWatched)
+                  handleMarkAsWatched(e, media, isWatched, setIsWatched)
                 }
                 disabled={isAdding}
-                className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
+                className={`w-7 h-7 flex items-center justify-center cursor-pointer rounded ${
                   isWatched ? "bg-green-600" : "bg-white"
                 }`}
                 title={isWatched ? "Watched" : "Mark as watched"}
               >
                 <Check
-                  size={16}
+                  size={20}
                   className={isWatched ? "text-black" : "text-black"}
                 />
               </button>
@@ -236,10 +242,12 @@ export default function MediaCard({ media, mediaType, type }: MediaCardProps) {
                   )
                 }
                 disabled={isAdding}
-                className={`w-6 h-6 border-r flex items-center justify-center cursor-pointer rounded ${
+                className={`w-7 h-7 flex items-center justify-center cursor-pointer rounded ${
                   isInWatchlist ? "bg-amber-400" : "bg-white"
                 }`}
-                title={isInWatchlist ? "Watched" : "Mark as watched"}
+                title={
+                  isInWatchlist ? "Added to watch list" : "Add to watch list"
+                }
               >
                 <BookMarked
                   size={16}

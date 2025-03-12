@@ -28,8 +28,8 @@ interface SearchContextProps {
   setResults: (value: TMDBMovie[]) => void;
   movies: TMDBMovie[];
   setMovies: (value: TMDBMovie[]) => void;
-  items: TMDBMovie[];
-  setItems: (value: TMDBMovie[]) => void;
+  items: (TMDBMovie | MovieDetail)[];
+  setItems: (value: (TMDBMovie | MovieDetail)[]) => void;
   query: string;
   setQuery: (value: string) => void;
   mediaType: MediaType;
@@ -107,7 +107,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
   const [details, setDetails] = useState<MovieDetail | null>(null);
-  const [items, setItems] = useState<TMDBMovie[]>([]);
+  const [items, setItems] = useState<(TMDBMovie | MovieDetail)[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isAdding, setIsAdding] = useState<boolean>(false);
   const [isPageLoading, setPageIsLoading] = useState<boolean>(false);

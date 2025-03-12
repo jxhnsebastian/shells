@@ -279,14 +279,14 @@ export default function SearchBar() {
                 performSearch(query, true, 1);
               }}
               variant="secondary"
-              className="h-5 text-xs px-2 cursor-pointer"
+              className="h-7 text-xs px-2 cursor-pointer"
             >
               apply {activeFilters} filter{activeFilters > 1 ? "s" : ""}
             </Badge>
           )}
 
           {movies.length > 0 && (
-            <Badge variant="secondary" className="h-5 text-xs px-2">
+            <Badge variant="secondary" className="h-7 text-xs px-2">
               page {page} of {totalPages}. total {totalMovies}
               {mediaType === "movie" ? " movies" : " shows"}
             </Badge>

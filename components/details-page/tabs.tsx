@@ -14,7 +14,7 @@ export function MovieTabNavigation({ activeTab, setActiveTab, tabs }: MovieTabNa
           {tabs.map((tab) => (
             <button
               key={tab}
-              className={`py-4 px-1 relative whitespace-nowrap ${
+              className={`py-4 px-1 relative whitespace-nowrap cursor-pointer transition-all ${
                 activeTab === tab ? "text-white font-medium" : "text-gray-400 hover:text-white"
               }`}
               onClick={() => setActiveTab(tab)}

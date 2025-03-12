@@ -7,24 +7,36 @@
 @import "tailwindcss";
 
 @layer utilities {
-  .modalscrollbar::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+  /* Base scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
-
-  .modalscrollbar::-webkit-scrollbar-track {
-    border-radius: 100dvh;
-    background: #202329;
+  
+  /* Track styling */
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: rgba(240, 240, 240, 0.08);
+    margin: 2px;
   }
-
-  .modalscrollbar::-webkit-scrollbar-thumb {
-    background: #000000;
-    border-radius: 100dvh;
-    border: 3px solid #202329;
+  
+  /* Thumb styling */
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    border: 2px solid rgba(32, 35, 41, 0.5);
+    transition: all 0.2s ease;
   }
-
-  .modalscrollbar::-webkit-scrollbar-thumb:hover {
-    background: #202329;
+  
+  /* Thumb hover effect */
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 100, 100, 0.9);
+    border-width: 1px;
+  }
+  
+  /* Corner where vertical and horizontal scrollbars meet */
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }
 

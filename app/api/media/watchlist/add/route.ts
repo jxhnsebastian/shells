@@ -3,6 +3,7 @@ import Watchlist from "@/models/Watchlist";
 import connectToDatabase from "@/lib/database";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
+import Watched from "@/models/Watched";
 
 export async function POST(request: NextRequest) {
   try {
@@ -54,6 +55,8 @@ export async function POST(request: NextRequest) {
       movieId,
       movieDetails,
     });
+
+    await Watched.deleteOne({ userId, movieId });
 
     return NextResponse.json({ success: true, entryId: newEntry._id });
   } catch (error) {

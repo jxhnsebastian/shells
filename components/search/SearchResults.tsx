@@ -1,12 +1,12 @@
 "use client";
 
-import { TMDBMovie } from "@/lib/types";
+import { MovieDetail, TMDBMovie } from "@/lib/types";
 import { Loader } from "lucide-react";
 import MediaCard from "../media/MediaCard";
 import { useSearchContext } from "../context/SearchContext";
 
 interface SearchResultsProps {
-  results: TMDBMovie[];
+  results: (TMDBMovie | MovieDetail)[];
   isLoading: boolean;
   layout?: "grid" | "list";
 }

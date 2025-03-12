@@ -8,10 +8,7 @@ interface MediaGridProps {
   mediaType: MediaType;
 }
 
-export default function MediaGrid({
-  items,
-  mediaType,
-}: MediaGridProps) {
+export default function MediaGrid({ items, mediaType }: MediaGridProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-10">
@@ -22,9 +19,9 @@ export default function MediaGrid({
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
-      {items.map((item) => (
+      {items.map((item, index) => (
         <MediaCard
-          key={item.id}
+          key={index}
           media={item}
           mediaType={mediaType}
           type="short"

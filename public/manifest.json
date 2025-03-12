@@ -2,7 +2,7 @@
   "name": "Shells",
   "short_name": "Shells",
   "description": "thinking about it",
-  "start_url": "/",
+  "start_url": "/search",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",

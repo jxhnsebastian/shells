@@ -19,13 +19,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Shells",
+  title: "Achappam",
   description: "thinking about it",
-  applicationName: "Shells",
+  applicationName: "Achappam",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Shells",
+    title: "Achappam",
   },
   formatDetection: {
     telephone: false,

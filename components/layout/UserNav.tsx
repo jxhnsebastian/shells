@@ -8,6 +8,7 @@ import {
   Bookmark,
   Check,
   Search,
+  DollarSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -63,6 +64,13 @@ export function UserNav() {
           <Link href="/search" className="flex items-center gap-2">
             <Search size={16} />
             <span>search</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem className="p-0.5 rounded">
+          <Link href="/flow" className="flex items-center gap-2">
+            <DollarSign size={16} />
+            <span>flow</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />

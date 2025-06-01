@@ -79,7 +79,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md border-transparent bg-transparent">
         <CardHeader className="space-y-1 items-start">
           <CardTitle className="text-xl font-medium  text-center">
-            login to shells
+            login to achappam
           </CardTitle>
           {/* <CardDescription className="text-center text-neutral-400">
             enter your credentials to access your account

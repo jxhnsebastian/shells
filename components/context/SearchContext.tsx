@@ -2,6 +2,8 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { useDebounce } from "@/hooks/useDebounce";
+import { Currency } from "@/lib/flow-types";
+import { getPythPrice } from "@/lib/helpers";
 import {
   addToWatched,
   addToWatchlist,
@@ -19,7 +21,12 @@ import React, {
   useState,
   ReactNode,
   useEffect,
+  useRef,
 } from "react";
+
+interface PriceData {
+  [address: string]: number;
+}
 
 interface SearchContextProps {
   details: MovieDetail | null;
@@ -58,6 +65,8 @@ interface SearchContextProps {
   setWatched: React.Dispatch<React.SetStateAction<number[]>>;
   watchList: number[];
   setWatchList: React.Dispatch<React.SetStateAction<number[]>>;
+  prices: PriceData;
+  setPrices: React.Dispatch<React.SetStateAction<PriceData>>;
 
   performSearch: (
     searchQuery: string,
@@ -78,6 +87,8 @@ interface SearchContextProps {
     isWatched: boolean,
     setIsWatched: React.Dispatch<React.SetStateAction<boolean>>
   ) => Promise<void>;
+
+  formatCurrency: (amount: number, currency: Currency) => string;
 }
 
 const SearchContext = createContext<SearchContextProps | undefined>(undefined);
@@ -116,8 +127,10 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
   const [totalMovies, setTotalMovies] = useState<number>(1);
   const [watched, setWatched] = useState<number[]>([]);
   const [watchList, setWatchList] = useState<number[]>([]);
+  const [prices, setPrices] = React.useState<PriceData>({ USD: 0, INR: 1 });
 
   const debouncedQuery = useDebounce(query, 500);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const checkList = async (ids: number[]) => {
     const status = await checkMediaStatus(ids);
@@ -288,6 +301,49 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     }
   };
 
+  const formatCurrency = (amount: number, currency: Currency) => {
+    const symbol = currency === "USD" ? "$" : "₹";
+    return `${symbol}${amount.toLocaleString()}`;
+  };
+
+  const pythIds = {
+    USD: "0ac0f9a2886fc2dd708bc66cc2cea359052ce89d324f45d95fadbc6c4fcf1809",
+  };
+
+  const fetchPrices = async () => {
+    if (Object.keys(prices).length === 0) return;
+
+    try {
+      const tokenArray = Object.values(pythIds);
+      const newPrices = await getPythPrice(tokenArray);
+      setPrices({ USD: newPrices[pythIds["USD"]] ?? 0, INR: 1 });
+    } catch (error) {
+      console.error("Error fetching prices:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (Object.keys(prices).length > 0) {
+      fetchPrices();
+
+      intervalRef.current = setInterval(() => {
+        fetchPrices();
+      }, 60000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+  }, [Object.keys(prices).length]);
+
   useEffect(() => {
     if (page > 0 && isAuthenticated && pathname?.includes("search"))
       performSearch(query, true);
@@ -337,11 +393,14 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         setWatched,
         watchList,
         setWatchList,
+        prices,
+        setPrices,
         performSearch,
         checkList,
         getDetails,
         handleAddToWatchlist,
         handleMarkAsWatched,
+        formatCurrency,
       }}
     >
       {children}

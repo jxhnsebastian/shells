@@ -11,7 +11,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       <header className="z-10">
         <div className=" px-4 py-3 flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-accent-light">
-            shells
+            achappam
           </Link>
           <UserNav />
         </div>
@@ -22,7 +22,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       <footer className="z-10">
         <div className="container mx-auto px-4 text-center text-charcoal">
           <p className="text-sm">
-            &copy; {new Date().getFullYear()} shells. movie data provided by
+            &copy; {new Date().getFullYear()} achappam. movie data provided by
             tmdb.
           </p>
         </div>

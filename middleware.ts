@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 import type { NextRequest } from "next/server";
-import { rateLimit } from "./lib/rateLimit";
+// import { rateLimit } from "./lib/rateLimit";
 
 const RATE_LIMIT_CONFIG = {
   limit: 2,
@@ -36,12 +36,11 @@ export async function middleware(request: NextRequest) {
       new URL(`/login?callbackUrl=${encodeURIComponent(path)}`, request.url)
     );
   }
-
   // Rate limit check for all api routes
-  if (path.startsWith("/api/") && !path.includes("auth")) {
-    const rateLimitResult = await rateLimit(request, RATE_LIMIT_CONFIG);
-    if (rateLimitResult) return rateLimitResult;
-  }
+  // if (path.startsWith("/api/") && !path.includes("auth")) {
+  //   const rateLimitResult = await rateLimit(request, RATE_LIMIT_CONFIG);
+  //   if (rateLimitResult) return rateLimitResult;
+  // }
 
   return NextResponse.next();
 }

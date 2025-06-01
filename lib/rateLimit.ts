@@ -14,6 +14,7 @@ interface RateLimitConfig {
 }
 
 export async function rateLimit(request: NextRequest, config: RateLimitConfig) {
+  console.log("in ratelimit")
   // Get IP address from request
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0] ||

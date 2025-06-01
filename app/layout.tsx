@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionProvider } from "@/components/providers/SessionProvider";
@@ -14,6 +14,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#000000",
+};
+
 export const metadata: Metadata = {
   title: "Shells",
   description: "thinking about it",
@@ -26,12 +30,9 @@ export const metadata: Metadata = {
   formatDetection: {
     telephone: false,
   },
-  themeColor: "#000000",
   manifest: "/manifest.json",
   icons: {
-    icon: [
-      { url: "/icons/icon512.png", sizes: "512x512", type: "image/png" },
-    ],
+    icon: [{ url: "/icons/icon512.png", sizes: "512x512", type: "image/png" }],
     apple: "/icons/icon512.png",
   },
 };

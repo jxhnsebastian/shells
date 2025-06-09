@@ -46,8 +46,8 @@ export default function AccountDialog({
       setFormData({
         name: account.name,
         type: account.type,
-        balance: account.balance,
-        currency: account.currency,
+        balance: account.balances[0].amount,
+        currency: account.balances[0].currency as Currency,
         description: account.description || "",
       });
     } else {
@@ -75,7 +75,10 @@ export default function AccountDialog({
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          balances: [{ amount: formData.balance, currency: formData.currency }],
+        }),
       });
 
       if (response.ok) {

@@ -42,9 +42,9 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = (session.user as any).id;
-    const { name, type, balance, currency, description } = await request.json();
+    const { name, type, balances, description } = await request.json();
 
-    if (!name || !type || balance === undefined || !currency) {
+    if (!name || !type || !balances.length) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -55,8 +55,7 @@ export async function POST(request: NextRequest) {
       userId,
       name,
       type,
-      balance,
-      currency,
+      balances,
       description,
     });
 

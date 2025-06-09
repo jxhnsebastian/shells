@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Account } from "@/lib/flow-types";
+import { Account, Currency } from "@/lib/flow-types";
 import AccountDialog from "./AccountDialog";
 import { useSearchContext } from "../context/SearchContext";
 
@@ -132,9 +132,12 @@ export default function AccountsTab({
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <div className="text-2xl font-bold">
-                      {formatCurrency(account.balance, account.currency)}
-                    </div>
+                    {account.balances.map((bal) => (
+                      <div key={bal.currency} className="text-2xl font-bold">
+                        {formatCurrency(bal.amount, bal.currency as Currency)}
+                      </div>
+                    ))}
+
                     {account.description && (
                       <p className="text-sm text-muted-foreground">
                         {account.description}

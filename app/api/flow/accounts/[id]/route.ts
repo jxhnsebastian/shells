@@ -21,11 +21,11 @@ export async function PUT(
 
     const { id } = await params;
     const userId = (session.user as any).id;
-    const { name, type, balance, currency, description } = await request.json();
+    const { name, type, balances, description } = await request.json();
 
     const account = await Account.findOneAndUpdate(
       { _id: id, userId },
-      { name, type, balance, currency, description },
+      { name, type, balances, description },
       { new: true }
     );
 

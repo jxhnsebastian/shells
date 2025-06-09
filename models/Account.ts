@@ -1,17 +1,11 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose from "mongoose";
 
-interface IAccount extends Document {
-  userId: mongoose.Types.ObjectId;
-  name: string;
-  type: "bank" | "crypto_wallet" | "crypto_card" | "other";
-  balance: number;
-  currency: "USD" | "INR";
-  description?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
+const BalanceSchema = new mongoose.Schema({
+  currency: { type: String, required: true },
+  amount: { type: Number, required: true, default: 0 },
+});
 
-const AccountSchema = new Schema<IAccount>(
+const AccountSchema = new mongoose.Schema(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -19,24 +13,18 @@ const AccountSchema = new Schema<IAccount>(
       required: true,
     },
     name: { type: String, required: true },
+    description: { type: String },
     type: {
       type: String,
-      enum: ["bank", "crypto_wallet", "crypto_card", "other"],
       required: true,
+      enum: ["bank", "crypto_card", "crypto_wallet", "other"],
     },
-    balance: { type: Number, required: true, default: 0 },
-    currency: {
-      type: String,
-      enum: ["USD", "INR"],
-      required: true,
-      default: "USD",
-    },
-    description: { type: String },
+    balances: [BalanceSchema],
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-const Account: Model<IAccount> =
-  mongoose.models.Account || mongoose.model<IAccount>("Account", AccountSchema);
-
-export default Account;
+export default mongoose.models.Account ||
+  mongoose.model("Account", AccountSchema);

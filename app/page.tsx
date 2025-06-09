@@ -8,7 +8,7 @@ export default async function HomePage() {
     <SiteLayout>
       <div className="flex items-center gap-4">
         <HomeItem route="/search" text="movies" icon={Film} />
-        <HomeItem route="/flow" text="flow" icon={DollarSign} />
+        <HomeItem route="/flow/transactions" text="flow" icon={DollarSign} />
       </div>
     </SiteLayout>
   );

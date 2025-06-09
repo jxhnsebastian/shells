@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Account, TransactionType, Currency } from "@/lib/flow-types";
+import { Account, TransactionType, Currency, commonCategories } from "@/lib/flow-types";
 
 interface TransactionDialogProps {
   isOpen: boolean;
@@ -25,20 +25,6 @@ interface TransactionDialogProps {
   accounts: Account[];
   onSuccess: () => void;
 }
-
-const commonCategories = {
-  expense: [
-    "Food",
-    "Transportation",
-    "Shopping",
-    "Bills",
-    "Entertainment",
-    "Healthcare",
-    "Other",
-  ],
-  income: ["Salary", "Freelance", "Investment", "Gift", "Other"],
-  transfer: ["Transfer"],
-};
 
 export default function TransactionDialog({
   isOpen,
@@ -52,7 +38,7 @@ export default function TransactionDialog({
     currency: "USD" as Currency,
     category: "",
     description: "",
-    fromAccountId: "",
+    accountId: "",
     toAccountId: "",
     date: new Date().toISOString().split("T")[0],
   });
@@ -78,7 +64,7 @@ export default function TransactionDialog({
           currency: "USD",
           category: "",
           description: "",
-          fromAccountId: "",
+          accountId: "",
           toAccountId: "",
           date: new Date().toISOString().split("T")[0],
         });
@@ -95,7 +81,7 @@ export default function TransactionDialog({
       ...formData,
       type,
       category: "",
-      fromAccountId: "",
+      accountId: "",
       toAccountId: "",
     });
   };
@@ -196,9 +182,9 @@ export default function TransactionDialog({
             <div className="space-y-2">
               <Label htmlFor="fromAccount">from account</Label>
               <Select
-                value={formData.fromAccountId}
+                value={formData.accountId}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, fromAccountId: value })
+                  setFormData({ ...formData, accountId: value })
                 }
               >
                 <SelectTrigger>
@@ -207,7 +193,7 @@ export default function TransactionDialog({
                 <SelectContent>
                   {accounts.map((account) => (
                     <SelectItem key={account._id} value={account._id!}>
-                      {account.name} ({account.currency})
+                      {account.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -230,7 +216,7 @@ export default function TransactionDialog({
                 <SelectContent>
                   {accounts.map((account) => (
                     <SelectItem key={account._id} value={account._id!}>
-                      {account.name} ({account.currency})
+                      {account.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -243,9 +229,9 @@ export default function TransactionDialog({
               <div className="space-y-2">
                 <Label htmlFor="fromAccount">from account</Label>
                 <Select
-                  value={formData.fromAccountId}
+                  value={formData.accountId}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, fromAccountId: value })
+                    setFormData({ ...formData, accountId: value })
                   }
                 >
                   <SelectTrigger>
@@ -254,7 +240,7 @@ export default function TransactionDialog({
                   <SelectContent>
                     {accounts.map((account) => (
                       <SelectItem key={account._id} value={account._id!}>
-                        {account.name} ({account.currency})
+                        {account.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -274,10 +260,10 @@ export default function TransactionDialog({
                   </SelectTrigger>
                   <SelectContent>
                     {accounts
-                      .filter((acc) => acc._id !== formData.fromAccountId)
+                      .filter((acc) => acc._id !== formData.accountId)
                       .map((account) => (
                         <SelectItem key={account._id} value={account._id!}>
-                          {account.name} ({account.currency})
+                          {account.name}
                         </SelectItem>
                       ))}
                   </SelectContent>

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth";
-import FlowTransaction from "@/models/FlowTransaction";
+import FlowTransaction from "@/models/Transaction";
 import Account from "@/models/Account";
 import connectToDatabase from "@/lib/database";
 import mongoose from "mongoose";
@@ -43,32 +43,54 @@ export async function DELETE(
       }
 
       // Reverse the account balance changes
-      if (transaction.type === "expense" && transaction.fromAccountId) {
+      if (transaction.type === "expense" && transaction.accountId) {
         await Account.findByIdAndUpdate(
-          transaction.fromAccountId,
-          { $inc: { balance: transaction.amount } },
-          { session: session_db }
+          transaction.accountId,
+          { $inc: { "balances.$[elem].amount": transaction.amount } },
+          {
+            arrayFilters: [{ "elem.currency": transaction.currency }],
+            session: session_db,
+          }
         );
       } else if (transaction.type === "income" && transaction.toAccountId) {
         await Account.findByIdAndUpdate(
           transaction.toAccountId,
-          { $inc: { balance: -transaction.amount } },
-          { session: session_db }
+          { $inc: { "balances.$[elem].amount": -transaction.amount } },
+          {
+            arrayFilters: [{ "elem.currency": transaction.currency }],
+            session: session_db,
+          }
         );
       } else if (
         transaction.type === "transfer" &&
-        transaction.fromAccountId &&
+        transaction.accountId &&
         transaction.toAccountId
       ) {
+        // For transfers, use transferDetails currencies if available
+        const fromCurrency =
+          transaction.transferDetails?.fromCurrency || transaction.currency;
+        const toCurrency =
+          transaction.transferDetails?.toCurrency || transaction.currency;
+        const fromAmount =
+          transaction.transferDetails?.fromAmount || transaction.amount;
+        const toAmount =
+          transaction.transferDetails?.toAmount || transaction.amount;
+
         await Account.findByIdAndUpdate(
-          transaction.fromAccountId,
-          { $inc: { balance: transaction.amount } },
-          { session: session_db }
+          transaction.accountId,
+          { $inc: { "balances.$[elem].amount": fromAmount } },
+          {
+            arrayFilters: [{ "elem.currency": fromCurrency }],
+            session: session_db,
+          }
         );
         await Account.findByIdAndUpdate(
           transaction.toAccountId,
-          { $inc: { balance: -transaction.amount } },
-          { session: session_db }
+          { $inc: { "balances.$[elem].amount": -toAmount } },
+          {
+            arrayFilters: [{ "elem.currency": toCurrency }],
+            session: session_db,
+          }
         );
       }
 

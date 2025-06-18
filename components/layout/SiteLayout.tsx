@@ -17,7 +17,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         </div>
       </header>
 
-      <main className="flex-1 container mx-auto px-4 py-6">{children}</main>
+      <main className="flex-1 w-[100dvw] container mx-auto px-3 md:px-4 py-6">{children}</main>
 
       <footer className="z-10">
         <div className="container mx-auto px-4 text-center text-charcoal">

@@ -9,8 +9,8 @@
 @layer utilities {
   /* Base scrollbar styling */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 2px;
+    height: 1px;
   }
   
   /* Track styling */
@@ -31,7 +31,7 @@
   /* Thumb hover effect */
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(100, 100, 100, 0.9);
-    border-width: 1px;
+    border-width: 0px;
   }
   
   /* Corner where vertical and horizontal scrollbars meet */

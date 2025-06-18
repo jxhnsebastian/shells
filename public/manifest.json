@@ -2,7 +2,7 @@
   "name": "Achappam",
   "short_name": "Achappam",
   "description": "thinking about it",
-  "start_url": "/search",
+  "start_url": "/flow",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",

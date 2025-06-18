@@ -4,9 +4,6 @@ import { useState } from "react";
 import {
   Plus,
   Trash2,
-  ArrowUpRight,
-  ArrowDownLeft,
-  ArrowRightLeft,
   Filter,
   X,
   ChevronLeft,
@@ -33,24 +30,26 @@ import { Currency, Transaction, commonCategories } from "@/lib/flow-types";
 import TransactionDialog from "./TransactionDialog";
 import { useSearchContext } from "../context/SearchContext";
 import { Filters, useFlowContext } from "../context/FlowContext";
+import {
+  UtensilsCrossed,
+  Car,
+  ShoppingBag,
+  Receipt,
+  Gamepad2,
+  Heart,
+  MoreHorizontal,
+  Banknote,
+  Briefcase,
+  TrendingUp,
+  Gift,
+  ArrowLeftRight,
+} from "lucide-react";
 
 interface TransactionsTabProps {
   transactions: Transaction[];
   onTransactionsChange: () => void;
   isLoading: boolean;
 }
-
-const transactionTypeIcons = {
-  expense: ArrowUpRight,
-  income: ArrowDownLeft,
-  transfer: ArrowRightLeft,
-};
-
-const transactionTypeColors = {
-  expense: "destructive",
-  income: "default",
-  transfer: "secondary",
-} as const;
 
 const transactionTypes = ["income", "expense", "transfer"];
 
@@ -142,19 +141,41 @@ export default function TransactionsTab({}: TransactionsTabProps) {
 
   const activeFiltersCount = Object.values(filters).filter(Boolean).length;
 
+  const getCategoryIcon = (category: string) => {
+    const iconMap: { [key: string]: any } = {
+      // Expense categories
+      Food: UtensilsCrossed,
+      Transportation: Car,
+      Shopping: ShoppingBag,
+      Bills: Receipt,
+      Entertainment: Gamepad2,
+      Healthcare: Heart,
+      Other: MoreHorizontal,
+      // Income categories
+      Salary: Banknote,
+      Freelance: Briefcase,
+      Investment: TrendingUp,
+      Gift: Gift,
+      // Transfer
+      Transfer: ArrowLeftRight,
+    };
+
+    return iconMap[category] || MoreHorizontal;
+  };
+
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">your transactions</h2>
+        <h2 className="font-semibold mb-2 md:mb-0">your transactions</h2>
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowFilters(!showFilters)}
           >
-            <Filter className="h-4 w-4 mr-2" />
-            filters
+            <Filter className="h-4 w-4" />
+            <span className="hidden md:flex ml-2">filters</span>
             {activeFiltersCount > 0 && (
               <Badge variant="secondary" className="ml-2">
                 {activeFiltersCount}
@@ -162,8 +183,8 @@ export default function TransactionsTab({}: TransactionsTabProps) {
             )}
           </Button>
           <Button onClick={handleCreateTransaction} size="sm">
-            <Plus className="h-4 w-4 mr-2" />
-            add transaction
+            <Plus className="h-4 w-4" />
+            <span className="hidden md:flex ml-2">add transaction</span>
           </Button>
         </div>
       </div>
@@ -353,87 +374,115 @@ export default function TransactionsTab({}: TransactionsTabProps) {
               {/* Transactions for this date */}
               <div className="space-y-3">
                 {transactions.map((transaction) => {
-                  const IconComponent = transactionTypeIcons[transaction.type];
                   return (
-                    <Card key={transaction._id}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-full bg-muted">
-                              <IconComponent className="h-4 w-4" />
+                    <Card
+                      key={transaction._id}
+                      className="group relative overflow-hidden border-0 bg-white/2 backdrop-blur-xl hover:bg-black/50 transition-all duration-300 p-0 mb-2 md:mb-3"
+                    >
+                      <CardContent className="p-0">
+                        <div className="flex items-center gap-2 md:gap-4 p-2 md:p-4">
+                          {/* Category Icon */}
+                          <div className="flex-shrink-0">
+                            <div className="w-9 h-9 md:w-12 md:h-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center transition-all duration-300 group-hover:bg-white/15">
+                              {(() => {
+                                const IconComponent = getCategoryIcon(
+                                  transaction.category
+                                );
+                                return (
+                                  <IconComponent className="w-4 h-4 md:w-5 md:h-5 text-white/80" />
+                                );
+                              })()}
                             </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-medium">
+                          </div>
+
+                          {/* Transaction Details */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-4">
+                              {/* Left side - Description and details */}
+                              <div className="min-w-0 flex-1">
+                                <span className="font-extralight text-white text-sm leading-tight mb-1 truncate">
                                   {transaction.description}
                                 </span>
-                                <Badge
-                                  variant={
-                                    transactionTypeColors[transaction.type]
-                                  }
-                                >
-                                  {transaction.type}
-                                </Badge>
-                                <Badge variant="outline">
+
+                                {/* Account info */}
+                                <div className="text-xs md:text-sm text-white/60 mb-1">
+                                  {transaction.type === "transfer" &&
+                                  transaction.accountId &&
+                                  transaction.toAccountId
+                                    ? `${getAccountName(
+                                        transaction.accountId
+                                      )} → ${getAccountName(
+                                        transaction.toAccountId
+                                      )}`
+                                    : transaction.type === "expense" &&
+                                      transaction.accountId
+                                    ? `From ${getAccountName(
+                                        transaction.accountId
+                                      )}`
+                                    : transaction.type === "income" &&
+                                      transaction.accountId
+                                    ? `To ${getAccountName(
+                                        transaction.accountId
+                                      )}`
+                                    : ""}
+                                </div>
+
+                                {/* Category */}
+                                {/* <div className="text-sm text-white/50">
                                   {transaction.category}
-                                </Badge>
+                                </div> */}
                               </div>
-                              <div className="text-sm text-muted-foreground">
-                                {transaction.type === "transfer" &&
-                                transaction.accountId &&
-                                transaction.toAccountId
-                                  ? `${getAccountName(
-                                      transaction.accountId
-                                    )} → ${getAccountName(
-                                      transaction.toAccountId
-                                    )}`
-                                  : transaction.type === "expense" &&
-                                    transaction.accountId
-                                  ? `from ${getAccountName(
-                                      transaction.accountId
-                                    )}`
-                                  : transaction.type === "income" &&
-                                    transaction.accountId
-                                  ? `to ${getAccountName(
-                                      transaction.accountId
-                                    )}`
-                                  : ""}
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {new Date(
-                                  transaction.date
-                                ).toLocaleTimeString()}
+
+                              {/* Right side - Amount and date */}
+                              <div className="flex-shrink-0 text-right">
+                                <div
+                                  className={`font-bold text-sm md:text-lg leading-tight mb-1 ${
+                                    transaction.type === "expense"
+                                      ? "text-red-500"
+                                      : transaction.type === "income"
+                                      ? "text-green-500"
+                                      : "text-blue-500"
+                                  }`}
+                                >
+                                  {transaction.type === "expense"
+                                    ? "- "
+                                    : transaction.type === "income"
+                                    ? "+ "
+                                    : ""}
+                                  {formatCurrency(
+                                    transaction.amount,
+                                    transaction.currency as Currency
+                                  )}
+                                </div>
+
+                                {/* Date and time */}
+                                <div className="text-xs md:text-sm text-white/50">
+                                  {new Date(
+                                    transaction.date
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  })}
+                                </div>
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={`font-bold ${
-                                transaction.type === "expense"
-                                  ? "text-red-600"
-                                  : transaction.type === "income"
-                                  ? "text-green-600"
-                                  : "text-blue-600"
-                              }`}
-                            >
-                              {transaction.type === "expense"
-                                ? "-"
-                                : transaction.type === "income"
-                                ? "+"
-                                : ""}
-                              {formatCurrency(
-                                transaction.amount,
-                                transaction.currency as Currency
-                              )}
-                            </span>
+
+                          {/* Delete button - only visible on hover */}
+                          <div className="flex-shrink-0 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="h-8 w-8 p-0 rounded-full bg-white/10 hover:bg-red-500/20 text-white/60 hover:text-red-500 transition-all duration-300"
                               onClick={() =>
                                 handleDeleteTransaction(transaction._id!)
                               }
                             >
                               <Trash2 className="h-4 w-4" />
+                              <span className="sr-only">
+                                Delete transaction
+                              </span>
                             </Button>
                           </div>
                         </div>
@@ -449,8 +498,8 @@ export default function TransactionsTab({}: TransactionsTabProps) {
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between">
+          <div className="text-sm text-muted-foreground mb-2 md:mb-0">
             Showing {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}{" "}
             to{" "}
             {Math.min(

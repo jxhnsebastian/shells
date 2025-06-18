@@ -55,6 +55,7 @@ export const config = {
     "/watched/:path*",
     "/movie/:path*",
     "/tv/:path*",
+    "/flow/:path*",
     // API routes
     "/api/:path*",
     // Auth pages

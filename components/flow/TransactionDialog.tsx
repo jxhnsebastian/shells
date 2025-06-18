@@ -32,6 +32,17 @@ export default function TransactionDialog({
   accounts,
   onSuccess,
 }: TransactionDialogProps) {
+  // Helper function to get current date and time in local timezone
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
   const [formData, setFormData] = useState({
     type: "expense" as TransactionType,
     amount: 0,
@@ -40,7 +51,7 @@ export default function TransactionDialog({
     description: "",
     accountId: "",
     toAccountId: "",
-    date: new Date().toISOString().split("T")[0],
+    date: getCurrentDateTime(),
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -52,7 +63,11 @@ export default function TransactionDialog({
       const response = await fetch("/api/flow/transactions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          // Convert datetime-local string to ISO string for backend
+          date: new Date(formData.date).toISOString(),
+        }),
       });
 
       if (response.ok) {
@@ -66,7 +81,7 @@ export default function TransactionDialog({
           description: "",
           accountId: "",
           toAccountId: "",
-          date: new Date().toISOString().split("T")[0],
+          date: getCurrentDateTime(),
         });
       }
     } catch (error) {
@@ -273,10 +288,10 @@ export default function TransactionDialog({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="date">date</Label>
+            <Label htmlFor="date">date & time</Label>
             <Input
               id="date"
-              type="date"
+              type="datetime-local"
               value={formData.date}
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })

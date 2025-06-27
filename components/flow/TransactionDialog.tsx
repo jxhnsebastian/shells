@@ -220,9 +220,9 @@ export default function TransactionDialog({
             <div className="space-y-2">
               <Label htmlFor="toAccount">to account</Label>
               <Select
-                value={formData.toAccountId}
+                value={formData.accountId}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, toAccountId: value })
+                  setFormData({ ...formData, accountId: value })
                 }
               >
                 <SelectTrigger>

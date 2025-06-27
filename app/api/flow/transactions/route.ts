@@ -170,9 +170,9 @@ export async function POST(request: NextRequest) {
             session: session_db,
           }
         );
-      } else if (type === "income" && toAccountId) {
+      } else if (type === "income" && accountId) {
         await Account.findByIdAndUpdate(
-          toAccountId,
+          accountId,
           { $inc: { "balances.$[elem].amount": amount } },
           {
             arrayFilters: [{ "elem.currency": currency }],

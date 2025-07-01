@@ -105,7 +105,7 @@ export default function TransactionsTab({}: TransactionsTabProps) {
   };
 
   const handlePageChange = (page: number) => {
-    fetchTransactions(page);
+    fetchTransactions(page, 20, filters);
   };
 
   const getFilteredCategories = () => {

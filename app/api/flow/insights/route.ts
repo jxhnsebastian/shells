@@ -41,7 +41,7 @@ export async function GET(
 
     // Default to current month if no dates provided
     const now = new Date();
-    const defaultStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const defaultStart = new Date(now.getFullYear(), now.getMonth(), -1);
     const defaultEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
     const dateStart: Date = startDate

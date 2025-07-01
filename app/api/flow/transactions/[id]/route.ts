@@ -52,9 +52,9 @@ export async function DELETE(
             session: session_db,
           }
         );
-      } else if (transaction.type === "income" && transaction.toAccountId) {
+      } else if (transaction.type === "income" && transaction.accountId) {
         await Account.findByIdAndUpdate(
-          transaction.toAccountId,
+          transaction.accountId,
           { $inc: { "balances.$[elem].amount": -transaction.amount } },
           {
             arrayFilters: [{ "elem.currency": transaction.currency }],

@@ -78,28 +78,30 @@ export interface TimeSeries {
   };
 }
 
+export interface InsightsData {
+  totalBalance: { [currency: string]: number };
+  income: { [currency: string]: number };
+  expense: { [currency: string]: number };
+  transfer: { [currency: string]: number };
+  categorySpending: {
+    [category: string]: { [currency: string]: number };
+  };
+  accountBalances: {
+    [accountId: string]: { [currency: string]: number };
+  };
+  accounts: Account[];
+  timeSeries: TimeSeries;
+  dateRange: {
+    start: string;
+    end: string;
+    groupBy: "day" | "week" | "month";
+  };
+  transactionCount: number;
+}
+
 export interface InsightsResponse {
   success: boolean;
-  insights: {
-    totalBalance: { [currency: string]: number };
-    income: { [currency: string]: number };
-    expense: { [currency: string]: number };
-    transfer: { [currency: string]: number };
-    categorySpending: {
-      [category: string]: { [currency: string]: number };
-    };
-    accountBalances: {
-      [accountId: string]: { [currency: string]: number };
-    };
-    accounts: Account[];
-    timeSeries: TimeSeries;
-    dateRange: {
-      start: string;
-      end: string;
-      groupBy: "day" | "week" | "month";
-    };
-    transactionCount: number;
-  };
+  insights: InsightsData;
 }
 
 export interface ErrorResponse {

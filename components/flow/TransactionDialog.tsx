@@ -17,7 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Account, TransactionType, Currency, commonCategories } from "@/lib/flow-types";
+import {
+  Account,
+  TransactionType,
+  Currency,
+  commonCategories,
+} from "@/lib/flow-types";
 
 interface TransactionDialogProps {
   isOpen: boolean;
@@ -36,10 +41,10 @@ export default function TransactionDialog({
   const getCurrentDateTime = () => {
     const now = new Date();
     const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
@@ -64,7 +69,8 @@ export default function TransactionDialog({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const isDifferentCurrency = formData.type === "transfer" && 
+  const isDifferentCurrency =
+    formData.type === "transfer" &&
     transferDetails.fromCurrency !== transferDetails.toCurrency;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,13 +82,16 @@ export default function TransactionDialog({
         ...formData,
         date: new Date(formData.date).toISOString(),
       };
-
+      console.log(transferDetails);
+      console.log(payload);
       // Add transfer details if currencies are different for transfers
-      if (formData.type === "transfer" && isDifferentCurrency) {
+      if (formData.type === "transfer") {
         payload.amount = transferDetails.fromAmount;
+        payload.currency = transferDetails.fromCurrency;
         payload.transferDetails = transferDetails;
       }
-
+      console.log(payload);
+      // return
       const response = await fetch("/api/flow/transactions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -124,7 +133,7 @@ export default function TransactionDialog({
       accountId: "",
       toAccountId: "",
     });
-    
+
     // Reset transfer details when changing transaction type
     if (type !== "transfer") {
       setTransferDetails({
@@ -145,15 +154,32 @@ export default function TransactionDialog({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="type" className="text-white">transaction type</Label>
+            <Label htmlFor="type" className="text-white">
+              transaction type
+            </Label>
             <Select value={formData.type} onValueChange={handleTypeChange}>
               <SelectTrigger className="bg-black border-gray-700 text-white">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-black border-gray-700">
-                <SelectItem value="expense" className="text-white hover:bg-gray-800">expense</SelectItem>
-                <SelectItem value="income" className="text-white hover:bg-gray-800">income</SelectItem>
-                <SelectItem value="transfer" className="text-white hover:bg-gray-800">transfer</SelectItem>
+                <SelectItem
+                  value="expense"
+                  className="text-white hover:bg-gray-800"
+                >
+                  expense
+                </SelectItem>
+                <SelectItem
+                  value="income"
+                  className="text-white hover:bg-gray-800"
+                >
+                  income
+                </SelectItem>
+                <SelectItem
+                  value="transfer"
+                  className="text-white hover:bg-gray-800"
+                >
+                  transfer
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -162,7 +188,9 @@ export default function TransactionDialog({
           {formData.type !== "transfer" && (
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="amount" className="text-white">amount</Label>
+                <Label htmlFor="amount" className="text-white">
+                  amount
+                </Label>
                 <Input
                   id="amount"
                   type="number"
@@ -180,7 +208,9 @@ export default function TransactionDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="currency" className="text-white">currency</Label>
+                <Label htmlFor="currency" className="text-white">
+                  currency
+                </Label>
                 <Select
                   value={formData.currency}
                   onValueChange={(value: Currency) =>
@@ -191,8 +221,18 @@ export default function TransactionDialog({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-black border-gray-700">
-                    <SelectItem value="USD" className="text-white hover:bg-gray-800">USD</SelectItem>
-                    <SelectItem value="INR" className="text-white hover:bg-gray-800">INR</SelectItem>
+                    <SelectItem
+                      value="USD"
+                      className="text-white hover:bg-gray-800"
+                    >
+                      USD
+                    </SelectItem>
+                    <SelectItem
+                      value="INR"
+                      className="text-white hover:bg-gray-800"
+                    >
+                      INR
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -200,7 +240,9 @@ export default function TransactionDialog({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-white">category</Label>
+            <Label htmlFor="category" className="text-white">
+              category
+            </Label>
             <Select
               value={formData.category}
               onValueChange={(value) =>
@@ -212,7 +254,11 @@ export default function TransactionDialog({
               </SelectTrigger>
               <SelectContent className="bg-black border-gray-700">
                 {commonCategories[formData.type].map((category) => (
-                  <SelectItem key={category} value={category} className="text-white hover:bg-gray-800">
+                  <SelectItem
+                    key={category}
+                    value={category}
+                    className="text-white hover:bg-gray-800"
+                  >
                     {category.toLowerCase()}
                   </SelectItem>
                 ))}
@@ -221,7 +267,9 @@ export default function TransactionDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-white">description</Label>
+            <Label htmlFor="description" className="text-white">
+              description
+            </Label>
             <Input
               id="description"
               value={formData.description}
@@ -235,7 +283,9 @@ export default function TransactionDialog({
 
           {formData.type === "expense" && (
             <div className="space-y-2">
-              <Label htmlFor="fromAccount" className="text-white">from account</Label>
+              <Label htmlFor="fromAccount" className="text-white">
+                from account
+              </Label>
               <Select
                 value={formData.accountId}
                 onValueChange={(value) =>
@@ -247,7 +297,11 @@ export default function TransactionDialog({
                 </SelectTrigger>
                 <SelectContent className="bg-black border-gray-700">
                   {accounts.map((account) => (
-                    <SelectItem key={account._id} value={account._id!} className="text-white hover:bg-gray-800">
+                    <SelectItem
+                      key={account._id}
+                      value={account._id!}
+                      className="text-white hover:bg-gray-800"
+                    >
                       {account.name}
                     </SelectItem>
                   ))}
@@ -258,7 +312,9 @@ export default function TransactionDialog({
 
           {formData.type === "income" && (
             <div className="space-y-2">
-              <Label htmlFor="toAccount" className="text-white">to account</Label>
+              <Label htmlFor="toAccount" className="text-white">
+                to account
+              </Label>
               <Select
                 value={formData.accountId}
                 onValueChange={(value) =>
@@ -270,7 +326,11 @@ export default function TransactionDialog({
                 </SelectTrigger>
                 <SelectContent className="bg-black border-gray-700">
                   {accounts.map((account) => (
-                    <SelectItem key={account._id} value={account._id!} className="text-white hover:bg-gray-800">
+                    <SelectItem
+                      key={account._id}
+                      value={account._id!}
+                      className="text-white hover:bg-gray-800"
+                    >
                       {account.name}
                     </SelectItem>
                   ))}
@@ -284,7 +344,9 @@ export default function TransactionDialog({
               {/* From Account with Currency */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="fromAccount" className="text-white">from account</Label>
+                  <Label htmlFor="fromAccount" className="text-white">
+                    from account
+                  </Label>
                   <Select
                     value={formData.accountId}
                     onValueChange={(value) =>
@@ -296,7 +358,11 @@ export default function TransactionDialog({
                     </SelectTrigger>
                     <SelectContent className="bg-black border-gray-700">
                       {accounts.map((account) => (
-                        <SelectItem key={account._id} value={account._id!} className="text-white hover:bg-gray-800">
+                        <SelectItem
+                          key={account._id}
+                          value={account._id!}
+                          className="text-white hover:bg-gray-800"
+                        >
                           {account.name}
                         </SelectItem>
                       ))}
@@ -305,19 +371,34 @@ export default function TransactionDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="fromCurrency" className="text-white">currency</Label>
+                  <Label htmlFor="fromCurrency" className="text-white">
+                    currency
+                  </Label>
                   <Select
                     value={transferDetails.fromCurrency}
                     onValueChange={(value: Currency) =>
-                      setTransferDetails({ ...transferDetails, fromCurrency: value })
+                      setTransferDetails({
+                        ...transferDetails,
+                        fromCurrency: value,
+                      })
                     }
                   >
                     <SelectTrigger className="bg-black border-gray-700 text-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-black border-gray-700">
-                      <SelectItem value="USD" className="text-white hover:bg-gray-800">USD</SelectItem>
-                      <SelectItem value="INR" className="text-white hover:bg-gray-800">INR</SelectItem>
+                      <SelectItem
+                        value="USD"
+                        className="text-white hover:bg-gray-800"
+                      >
+                        USD
+                      </SelectItem>
+                      <SelectItem
+                        value="INR"
+                        className="text-white hover:bg-gray-800"
+                      >
+                        INR
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -326,7 +407,9 @@ export default function TransactionDialog({
               {/* To Account with Currency */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2 sm:col-span-2">
-                  <Label htmlFor="toAccount" className="text-white">to account</Label>
+                  <Label htmlFor="toAccount" className="text-white">
+                    to account
+                  </Label>
                   <Select
                     value={formData.toAccountId}
                     onValueChange={(value) =>
@@ -340,7 +423,11 @@ export default function TransactionDialog({
                       {accounts
                         .filter((acc) => acc._id !== formData.accountId)
                         .map((account) => (
-                          <SelectItem key={account._id} value={account._id!} className="text-white hover:bg-gray-800">
+                          <SelectItem
+                            key={account._id}
+                            value={account._id!}
+                            className="text-white hover:bg-gray-800"
+                          >
                             {account.name}
                           </SelectItem>
                         ))}
@@ -349,19 +436,34 @@ export default function TransactionDialog({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="toCurrency" className="text-white">currency</Label>
+                  <Label htmlFor="toCurrency" className="text-white">
+                    currency
+                  </Label>
                   <Select
                     value={transferDetails.toCurrency}
                     onValueChange={(value: Currency) =>
-                      setTransferDetails({ ...transferDetails, toCurrency: value })
+                      setTransferDetails({
+                        ...transferDetails,
+                        toCurrency: value,
+                      })
                     }
                   >
                     <SelectTrigger className="bg-black border-gray-700 text-white">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-black border-gray-700">
-                      <SelectItem value="USD" className="text-white hover:bg-gray-800">USD</SelectItem>
-                      <SelectItem value="INR" className="text-white hover:bg-gray-800">INR</SelectItem>
+                      <SelectItem
+                        value="USD"
+                        className="text-white hover:bg-gray-800"
+                      >
+                        USD
+                      </SelectItem>
+                      <SelectItem
+                        value="INR"
+                        className="text-white hover:bg-gray-800"
+                      >
+                        INR
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -415,18 +517,25 @@ export default function TransactionDialog({
               {/* Same currency amount */}
               {!isDifferentCurrency && (
                 <div className="space-y-2">
-                  <Label htmlFor="transferAmount" className="text-white">amount</Label>
+                  <Label htmlFor="transferAmount" className="text-white">
+                    amount
+                  </Label>
                   <Input
                     id="transferAmount"
                     type="number"
                     step="0.01"
                     value={formData.amount}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setFormData({
                         ...formData,
                         amount: parseFloat(e.target.value) || 0,
-                      })
-                    }
+                      });
+                      setTransferDetails({
+                        ...transferDetails,
+                        toAmount: parseFloat(e.target.value) || 0,
+                        fromAmount: parseFloat(e.target.value) || 0,
+                      });
+                    }}
                     className="bg-black border-gray-700 text-white"
                     required
                   />
@@ -436,7 +545,9 @@ export default function TransactionDialog({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="date" className="text-white">date & time</Label>
+            <Label htmlFor="date" className="text-white">
+              date & time
+            </Label>
             <Input
               id="date"
               type="datetime-local"
@@ -450,17 +561,17 @@ export default function TransactionDialog({
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onClose} 
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
               className="w-full sm:w-auto bg-black border-gray-700 text-white hover:bg-gray-800"
             >
               cancel
             </Button>
-            <Button 
-              type="submit" 
-              disabled={isLoading} 
+            <Button
+              type="submit"
+              disabled={isLoading}
               className="w-full sm:w-auto bg-white text-black hover:bg-gray-200"
             >
               {isLoading ? "creating..." : "create transaction"}

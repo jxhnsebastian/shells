@@ -62,10 +62,11 @@ export default function TransactionsTab({}: TransactionsTabProps) {
     flowLoading,
     pagination,
     fetchAccounts,
+    filters,
+    setFilters,
   } = useFlowContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<Filters>({});
 
   const handleCreateTransaction = () => {
     setIsDialogOpen(true);

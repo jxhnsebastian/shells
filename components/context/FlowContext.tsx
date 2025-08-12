@@ -34,6 +34,8 @@ interface FlowContextProps {
   setFlowLoading: (value: boolean) => void;
   pagination: PaginationInfo;
   setPagination: (value: PaginationInfo) => void;
+  filters: Filters;
+  setFilters: (value: Filters) => void;
 
   fetchTransactions: (
     page?: number,
@@ -68,6 +70,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({ children }) => {
     totalItems: 0,
     itemsPerPage: 20,
   });
+  const [filters, setFilters] = useState<Filters>({});
 
   const fetchAccounts = async () => {
     try {
@@ -84,17 +87,17 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({ children }) => {
   };
 
   const fetchTransactions = async (
-    page: number = 1,
-    limit: number = 20,
+    page?: number,
+    limit?: number,
     newFilters?: Filters
   ) => {
     try {
       setFlowLoading(true);
-      const currentFilters = newFilters || {};
+      const currentFilters = newFilters || filters;
 
       const params = new URLSearchParams({
-        page: page.toString(),
-        limit: limit.toString(),
+        page: (page ?? pagination.currentPage).toString(),
+        limit: (limit ?? 20).toString(),
       });
 
       if (currentFilters.accountId)
@@ -143,6 +146,8 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({ children }) => {
         setPagination,
         fetchAccounts,
         fetchTransactions,
+        filters,
+        setFilters,
       }}
     >
       {children}

@@ -881,8 +881,9 @@ const InsightsDashboard: React.FC = () => {
                 {categoryData
                   .sort((a, b) => b.value - a.value)
                   .slice(0, 5)
-                  .map((category: CategoryDataPoint) => (
+                  .map((category: CategoryDataPoint, index) => (
                     <SpendingCategoryCard
+                      key={index}
                       category={category}
                       currencyView={currencyView}
                     />

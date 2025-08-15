@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { Account, Currency, Transaction } from "@/lib/flow-types";
+import { Account, Transaction } from "@/lib/flow-types";
 import {
   ReactNode,
   createContext,

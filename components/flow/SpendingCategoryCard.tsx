@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useFlowContext } from "../context/FlowContext";
 import { useSearchContext } from "../context/SearchContext";
 import { CategoryDataPoint, CurrencyView } from "./InsightsTab";
-import { Currency, Transaction } from "@/lib/flow-types";
+import { Transaction } from "@/lib/flow-types";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import {
   Collapsible,

@@ -16,7 +16,6 @@ import {
 
 type ApiResponse = InsightsResponse | ErrorResponse;
 
-
 export async function GET(
   request: Request
 ): Promise<NextResponse<ApiResponse>> {
@@ -124,17 +123,37 @@ export async function GET(
 
     // Calculate category-wise spending
     const categorySpending: {
-      [category: string]: { [currency: string]: number };
+      [category: string]: {
+        transactions: TransactionInterface[];
+        summary: {
+          [currency: string]: number;
+        };
+      };
     } = transactions
       .filter((t: TransactionInterface) => t.type === "expense")
-      .reduce((acc, transaction) => {
-        const { category, amount, currency } = transaction;
-        if (!acc[category]) {
-          acc[category] = {};
+      .reduce(
+        (acc, transaction) => {
+          const { category, amount, currency } = transaction;
+          if (!acc[category]) {
+            acc[category] = {
+              transactions: [],
+              summary: {},
+            };
+          }
+          acc[category].summary[currency] =
+            (acc[category].summary[currency] || 0) + amount;
+          acc[category].transactions.push(transaction);
+          return acc;
+        },
+        {} as {
+          [category: string]: {
+            transactions: TransactionInterface[];
+            summary: {
+              [currency: string]: number;
+            };
+          };
         }
-        acc[category][currency] = (acc[category][currency] || 0) + amount;
-        return acc;
-      }, {} as { [category: string]: { [currency: string]: number } });
+      );
 
     // Generate time series data for chart
     const generateTimeSeries = (

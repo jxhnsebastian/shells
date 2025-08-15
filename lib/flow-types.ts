@@ -84,7 +84,12 @@ export interface InsightsData {
   expense: { [currency: string]: number };
   transfer: { [currency: string]: number };
   categorySpending: {
-    [category: string]: { [currency: string]: number };
+    [category: string]: {
+      transactions: Transaction[];
+      summary: {
+        [currency: string]: number;
+      };
+    };
   };
   accountBalances: {
     [accountId: string]: { [currency: string]: number };

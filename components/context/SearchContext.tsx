@@ -89,6 +89,11 @@ interface SearchContextProps {
   ) => Promise<void>;
 
   formatCurrency: (amount: number, currency: Currency) => string;
+  convertAmount: (
+    amount: number,
+    fromCurrency: string,
+    toCurrency: Currency
+  ) => number;
 }
 
 const SearchContext = createContext<SearchContextProps | undefined>(undefined);
@@ -322,6 +327,21 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
     }
   };
 
+  const convertAmount = (
+    amount: number,
+    fromCurrency: string,
+    toCurrency: Currency
+  ): number => {
+    if (fromCurrency === toCurrency) return amount;
+
+    if (fromCurrency === "USD" && toCurrency === "INR") {
+      return amount * prices.USD;
+    } else if (fromCurrency === "INR" && toCurrency === "USD") {
+      return amount / prices.USD;
+    }
+    return amount;
+  };
+
   useEffect(() => {
     if (Object.keys(prices).length > 0) {
       fetchPrices();
@@ -401,6 +421,7 @@ export const SearchProvider: React.FC<SearchProviderProps> = ({ children }) => {
         handleAddToWatchlist,
         handleMarkAsWatched,
         formatCurrency,
+        convertAmount
       }}
     >
       {children}

@@ -64,6 +64,7 @@ export default function TransactionsTab({}: TransactionsTabProps) {
     fetchAccounts,
     filters,
     setFilters,
+    getAccountName,
   } = useFlowContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -87,11 +88,6 @@ export default function TransactionsTab({}: TransactionsTabProps) {
     } catch (error) {
       console.error("Error deleting transaction:", error);
     }
-  };
-
-  const getAccountName = (accountId: string) => {
-    const account = accounts.find((acc) => acc._id === accountId);
-    return account?.name || "Unknown Account";
   };
 
   const handleFilterChange = (key: keyof Filters, value: any) => {

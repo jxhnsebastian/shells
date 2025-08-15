@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/useAuth";
-import { Account, Transaction } from "@/lib/flow-types";
+import { Account, Currency, Transaction } from "@/lib/flow-types";
 import {
   ReactNode,
   createContext,
@@ -43,6 +43,7 @@ interface FlowContextProps {
     newFilters?: Filters
   ) => Promise<void>;
   fetchAccounts: () => Promise<void>;
+  getAccountName: (accountId: string) => string;
 }
 
 const FlowContext = createContext<FlowContextProps | undefined>(undefined);
@@ -71,6 +72,11 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({ children }) => {
     itemsPerPage: 20,
   });
   const [filters, setFilters] = useState<Filters>({});
+
+  const getAccountName = (accountId: string): string => {
+    const account = accounts.find((acc) => acc._id === accountId);
+    return account?.name || "Unknown Account";
+  };
 
   const fetchAccounts = async () => {
     try {
@@ -148,6 +154,7 @@ export const FlowProvider: React.FC<FlowProviderProps> = ({ children }) => {
         fetchTransactions,
         filters,
         setFilters,
+        getAccountName,
       }}
     >
       {children}

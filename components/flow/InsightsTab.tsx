@@ -31,11 +31,18 @@ import {
   Cell,
   Pie,
 } from "recharts";
-import { Account, InsightsData, InsightsResponse } from "@/lib/flow-types";
+import {
+  Account,
+  InsightsData,
+  InsightsResponse,
+  Transaction,
+} from "@/lib/flow-types";
+import SpendingCategoryCard from "./SpendingCategoryCard";
+import { useSearchContext } from "../context/SearchContext";
 
 // Types
 type Currency = "USD" | "INR";
-type CurrencyView = "split" | "usd" | "inr";
+export type CurrencyView = "split" | "usd" | "inr";
 
 interface ErrorResponse {
   error: string;
@@ -47,35 +54,16 @@ interface ApiFilters {
   endDate?: string;
 }
 
-// Context hook (you'll need to import this from your actual context)
-interface SearchContextType {
-  formatCurrency: (amount: number, currency: Currency) => string;
-  prices: { USD: number; INR: number };
-}
-
-// You'll need to replace this with your actual context import
-const useSearchContext = (): SearchContextType => {
-  // This should be imported from your actual context
-  const formatCurrency = (amount: number, currency: Currency): string => {
-    const symbol = currency === "USD" ? "$" : "₹";
-    return `${symbol}${amount.toLocaleString()}`;
-  };
-
-  return {
-    formatCurrency,
-    prices: { USD: 83.5, INR: 1 }, // This should come from your actual context
-  };
-};
-
 interface ChartDataPoint {
   time: string;
   [key: string]: number | string;
 }
 
-interface CategoryDataPoint {
+export interface CategoryDataPoint {
   name: string;
   value: number;
   color: string;
+  transactions: Transaction[];
 }
 
 interface ChartSeries {
@@ -86,7 +74,7 @@ interface ChartSeries {
 }
 
 const InsightsDashboard: React.FC = () => {
-  const { formatCurrency, prices } = useSearchContext();
+  const { formatCurrency, convertAmount } = useSearchContext();
 
   // State
   const [data, setData] = useState<InsightsData | null>(null);
@@ -94,11 +82,24 @@ const InsightsDashboard: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currencyView, setCurrencyView] = useState<CurrencyView>("split");
   const [selectedAccount, setSelectedAccount] = useState<string>("all");
-  const [dateRange, setDateRange] = useState({
-    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0],
-    end: new Date().toISOString().split("T")[0],
+  const [dateRange, setDateRange] = useState(() => {
+    const now = new Date();
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    return {
+      start:
+        startDate.getFullYear() +
+        "-" +
+        String(startDate.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(startDate.getDate()).padStart(2, "0"),
+      end:
+        now.getFullYear() +
+        "-" +
+        String(now.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(now.getDate() + 1).padStart(2, "0"),
+    };
   });
 
   // Chart customization state
@@ -224,22 +225,6 @@ const InsightsDashboard: React.FC = () => {
     setAvailableSeries(series);
   }, [data]);
 
-  // Currency conversion utility
-  const convertAmount = (
-    amount: number,
-    fromCurrency: string,
-    toCurrency: Currency
-  ): number => {
-    if (fromCurrency === toCurrency) return amount;
-
-    if (fromCurrency === "USD" && toCurrency === "INR") {
-      return amount * prices.USD;
-    } else if (fromCurrency === "INR" && toCurrency === "USD") {
-      return amount / prices.USD;
-    }
-    return amount;
-  };
-
   // Format amount based on currency view
   const formatAmount = (amounts: { [currency: string]: number }): string => {
     if (currencyView === "split") {
@@ -355,7 +340,8 @@ const InsightsDashboard: React.FC = () => {
     if (!data?.categorySpending) return [];
 
     return Object.entries(data.categorySpending).map(
-      ([category, amounts], index) => {
+      ([category, categoryData], index) => {
+        const { transactions, summary: amounts } = categoryData;
         const targetCurrency =
           currencyView === "split"
             ? "USD"
@@ -371,6 +357,12 @@ const InsightsDashboard: React.FC = () => {
           name: category,
           value: totalAmount,
           color: COLORS[index % COLORS.length],
+          transactions: transactions.map((txn) => {
+            return {
+              ...txn,
+              amount: convertAmount(txn.amount, txn.currency, targetCurrency),
+            };
+          }),
         };
       }
     );
@@ -890,24 +882,10 @@ const InsightsDashboard: React.FC = () => {
                   .sort((a, b) => b.value - a.value)
                   .slice(0, 5)
                   .map((category: CategoryDataPoint) => (
-                    <div
-                      key={category.name}
-                      className="flex justify-between items-center p-3 rounded-lg bg-gray-800/50"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: category.color }}
-                        />
-                        <span className="font-medium">{category.name}</span>
-                      </div>
-                      <span className="font-semibold">
-                        {formatCurrency(
-                          category.value,
-                          currencyView === "inr" ? "INR" : "USD"
-                        )}
-                      </span>
-                    </div>
+                    <SpendingCategoryCard
+                      category={category}
+                      currencyView={currencyView}
+                    />
                   ))}
               </div>
             </CardContent>
